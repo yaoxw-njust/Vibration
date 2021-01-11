@@ -273,6 +273,15 @@ void AlgorithmBase::startGrab(QString strTrainRunNumber)
 			catch (...)
 			{
 				algorithmSendMsg(QStringLiteral("数据采集中出现错误"), 1);
+				if (ret > 0)
+				{
+					algorithmSendMsg(QStringLiteral("停止采集数据"), 0);
+				}
+				else
+				{
+					algorithmSendMsg(QStringLiteral("停止采集数据异常"), 1);
+				}
+				return;
 			}
 			if (NULL != arrayData)
 			{
@@ -360,7 +369,16 @@ void AlgorithmBase::initialData()
 
 void AlgorithmBase::analysisAndSaveData()
 {
-
+	if (allGrabData.size() == 0)
+	{
+		algorithmSendMsg(QStringLiteral("系统未采集到任何数据，停止本次数据处理！"), 1);
+		return;
+	}
+	if (allGrabData.size() > 8000000)
+	{
+		algorithmSendMsg(QStringLiteral("数据采集量超多8百万，疑似数据采集异常，停止数据处理"), 1);
+		return;
+	}
 	//数据归类
 	for (size_t i = 0; i < allGrabData.size() / 16; i++)
 	{

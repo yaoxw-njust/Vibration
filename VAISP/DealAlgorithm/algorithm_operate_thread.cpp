@@ -254,6 +254,12 @@ void AlgorithmOperate::electricalTemperatureCalculate()
 				vect4.push_back(j);
 		}
 
+		if (vect3.size() == 0 || vect4.size() ==0)
+		{
+			logHelper->writeError("algoritmRunLog", QStringLiteral("vect2数据分离异常，位置标记：") + QString::number(m_nFlag));
+			return;
+		}
+
 		int buzhang = vect3.size();
 		if (vect3.size()>vect4.size())
 		{
@@ -389,7 +395,7 @@ void AlgorithmOperate::vibrationCalculate()
 
 	for (size_t i = 1; i < firstIndexTmp.size(); i = i + 2)
 	{
-		if ((firstIndexTmp[i] - firstIndexTmp[i - 1]) > 30)
+		if ((firstIndexTmp[i] - firstIndexTmp[i - 1]) > 100)
 		{
 			firstIndex.push_back(firstIndexTmp[i - 1]);
 			firstIndex.push_back(firstIndexTmp[i]);
@@ -423,7 +429,7 @@ void AlgorithmOperate::vibrationCalculate()
 
 	for (size_t i = 1; i < secondIndexTmp.size(); i = i + 2)
 	{
-		if ((secondIndexTmp[i] - secondIndexTmp[i - 1]) > 30)
+		if ((secondIndexTmp[i] - secondIndexTmp[i - 1]) > 100)
 		{
 			secondIndex.push_back(secondIndexTmp[i - 1]);
 			secondIndex.push_back(secondIndexTmp[i]);
