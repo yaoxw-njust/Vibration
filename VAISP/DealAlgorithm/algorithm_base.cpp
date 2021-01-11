@@ -273,6 +273,7 @@ void AlgorithmBase::startGrab(QString strTrainRunNumber)
 			catch (...)
 			{
 				algorithmSendMsg(QStringLiteral("数据采集中出现错误"), 1);
+				int ret = ADStop(socket_index);
 				if (ret > 0)
 				{
 					algorithmSendMsg(QStringLiteral("停止采集数据"), 0);
