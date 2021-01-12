@@ -1,0 +1,45 @@
+﻿生成启动时间为 2021/1/12 19:48:32。
+     1>项目“D:\software_现场\飞鹅岭VAISP\VAISP\VAIS\VAIS.vcxproj”在节点 2 上(Rebuild 个目标)。
+     1>QtMsBuildNotFound:
+         QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly.
+       CustomBuild:
+         Moc'ing vais_main_form.h...
+         Moc'ing password_form.h...
+         Moc'ing tray_menu.h...
+         Moc'ing simulate_trigger_ui.h...
+         Rcc'ing imageResource.qrc...
+       ClCompile:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I.\GeneratedFiles /I. /ID:\Qt\Qt5.7.1\5.7\msvc2013\include /ID:\Qt\Qt5.7.1\5.7\msvc2013\include\QtCore /ID:\Qt\Qt5.7.1\5.7\msvc2013\include\QtGui /ID:\Qt\Qt5.7.1\5.7\msvc2013\include\QtANGLE /ID:\Qt\Qt5.7.1\5.7\msvc2013\include\QtNetwork /ID:\Qt\Qt5.7.1\5.7\msvc2013\include\QtSql /ID:\Qt\Qt5.7.1\5.7\msvc2013\include\QtWidgets /Zi /nologo /W1 /WX- /MP /Od /Oy- /D UNICODE /D WIN32 /D WIN64 /D QT_DLL /D QT_CORE_LIB /D QT_GUI_LIB /D QT_NETWORK_LIB /D QT_SQL_LIB /D QT_WIDGETS_LIB /Gm- /EHsc /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt GeneratedFiles\moc_password_form.cpp GeneratedFiles\moc_simulate_trigger_ui.cpp GeneratedFiles\moc_tray_menu.cpp GeneratedFiles\moc_vais_main_form.cpp import_dll_class.cpp main.cpp password_form.cpp simulate_trigger_ui.cpp tray_menu.cpp vais_main_form.cpp
+         moc_password_form.cpp
+         moc_simulate_trigger_ui.cpp
+         moc_tray_menu.cpp
+         moc_vais_main_form.cpp
+         import_dll_class.cpp
+         main.cpp
+         password_form.cpp
+         simulate_trigger_ui.cpp
+         tray_menu.cpp
+         vais_main_form.cpp
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I.\GeneratedFiles /I. /ID:\Qt\Qt5.7.1\5.7\msvc2013\include /ID:\Qt\Qt5.7.1\5.7\msvc2013\include\QtCore /ID:\Qt\Qt5.7.1\5.7\msvc2013\include\QtGui /ID:\Qt\Qt5.7.1\5.7\msvc2013\include\QtANGLE /ID:\Qt\Qt5.7.1\5.7\msvc2013\include\QtNetwork /ID:\Qt\Qt5.7.1\5.7\msvc2013\include\QtSql /ID:\Qt\Qt5.7.1\5.7\msvc2013\include\QtWidgets /Zi /nologo /W1 /WX- /MP /Od /Oy- /D UNICODE /D WIN32 /D WIN64 /D QT_DLL /D QT_CORE_LIB /D QT_GUI_LIB /D QT_NETWORK_LIB /D QT_SQL_LIB /D QT_WIDGETS_LIB /Gm- /EHsc /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt GeneratedFiles\qrc_imageResource.cpp
+         qrc_imageResource.cpp
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /l"0x0409" /nologo /fo"Debug\VAIS.res" VAIS.rc 
+       Link:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"..\exec-win32\\VAIS.exe" /NOLOGO /LIBPATH:D:\Qt\Qt5.7.1\5.7\msvc2013\lib qtmaind.lib Qt5Cored.lib Qt5Guid.lib Qt5Networkd.lib Qt5Sqld.lib Qt5Widgetsd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"..\exec-win32\VAIS.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\exec-win32\VAIS.lib" /MACHINE:X86 /SAFESEH Debug\VAIS.res
+         Debug\moc_password_form.obj
+         Debug\moc_simulate_trigger_ui.obj
+         Debug\moc_tray_menu.obj
+         Debug\moc_vais_main_form.obj
+         Debug\qrc_imageResource.obj
+         Debug\import_dll_class.obj
+         Debug\main.obj
+         Debug\password_form.obj
+         Debug\simulate_trigger_ui.obj
+         Debug\tray_menu.obj
+         Debug\vais_main_form.obj
+         VAIS.vcxproj -> D:\software_现场\飞鹅岭VAISP\VAISP\VAIS\..\exec-win32\VAIS.exe
+     1>已完成生成项目“D:\software_现场\飞鹅岭VAISP\VAISP\VAIS\VAIS.vcxproj”(Rebuild 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:31.68
