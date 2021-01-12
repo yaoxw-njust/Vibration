@@ -1,0 +1,40 @@
+﻿生成启动时间为 2020/11/17 9:41:37。
+     1>项目“E:\DevelopStation-YD\Project-Git\Optris-IRIGU\DealLogic\DealLogic.vcxproj”在节点 6 上(Rebuild 个目标)。
+     1>CustomBuild:
+         Moc'ing network_logic.h...
+         Moc'ing main_logic_udp.h...
+         Moc'ing udp_logic.h...
+         Moc'ing tcp_logic.h...
+         Moc'ing main_logic_tcp.h...
+       ClCompile:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I"C:\libirimager-8.6.0-windows\irDirectSDK\sdk" /I.\GeneratedFiles /I. /IC:\Qt\Qt5.6.2\5.6\msvc2013_64\include /I.\GeneratedFiles\Release /IC:\Qt\Qt5.6.2\5.6\msvc2013_64\include\QtCore /IC:\Qt\Qt5.6.2\5.6\msvc2013_64\include\QtNetwork /IC:\Qt\Qt5.6.2\5.6\msvc2013_64\include\QtSql /Zi /nologo /W1 /WX- /MP /Od /D UNICODE /D WIN32 /D WIN64 /D QT_DLL /D QT_NO_DEBUG /D NDEBUG /D QT_CORE_LIB /D QT_NETWORK_LIB /D DEALLOGIC_LIB /D QT_SQL_LIB /D _WINDLL /Gm- /EHsc /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt GeneratedFiles\Release\moc_main_logic_tcp.cpp GeneratedFiles\Release\moc_main_logic_udp.cpp GeneratedFiles\Release\moc_network_logic.cpp GeneratedFiles\Release\moc_tcp_logic.cpp GeneratedFiles\Release\moc_udp_logic.cpp import_dll_class.cpp main_logic_udp.cpp main_logic_tcp.cpp network_logic.cpp tcp_logic.cpp udp_logic.cpp
+         moc_main_logic_tcp.cpp
+         moc_main_logic_udp.cpp
+         moc_network_logic.cpp
+         moc_tcp_logic.cpp
+         moc_udp_logic.cpp
+         import_dll_class.cpp
+         main_logic_udp.cpp
+         main_logic_tcp.cpp
+         network_logic.cpp
+         tcp_logic.cpp
+         udp_logic.cpp
+       Link:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"..\exec-Release\\DealLogic.dll" /NOLOGO /LIBPATH:"C:\libirimager-8.6.0-windows\irDirectSDK\sdk\x64" /LIBPATH:C:\Qt\Qt5.6.2\5.6\msvc2013_64\lib qtmain.lib Qt5Core.lib Qt5Network.lib Qt5Sql.lib libirimager.lib opencv_world310.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"..\exec-Release\DealLogic.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\exec-Release\DealLogic.lib" /MACHINE:X64 /DLL x64\Release\moc_main_logic_tcp.obj
+         x64\Release\moc_main_logic_udp.obj
+         x64\Release\moc_network_logic.obj
+         x64\Release\moc_tcp_logic.obj
+         x64\Release\moc_udp_logic.obj
+         x64\Release\import_dll_class.obj
+         x64\Release\main_logic_udp.obj
+         x64\Release\main_logic_tcp.obj
+         x64\Release\network_logic.obj
+         x64\Release\tcp_logic.obj
+         x64\Release\udp_logic.obj
+            正在创建库 ..\exec-Release\DealLogic.lib 和对象 ..\exec-Release\DealLogic.exp
+         DealLogic.vcxproj -> E:\DevelopStation-YD\Project-Git\Optris-IRIGU\DealLogic\..\exec-Release\DealLogic.dll
+     1>已完成生成项目“E:\DevelopStation-YD\Project-Git\Optris-IRIGU\DealLogic\DealLogic.vcxproj”(Rebuild 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:09.24
