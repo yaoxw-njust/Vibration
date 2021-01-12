@@ -1,0 +1,27 @@
+﻿生成启动时间为 2021/1/12 15:59:53。
+     1>项目“D:\software_现场\太和VAISP\VAISP\DealAlgorithm\DealAlgorithm.vcxproj”在节点 4 上(Rebuild 个目标)。
+     1>QtMsBuildNotFound:
+         QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly.
+       CustomBuild:
+         Moc'ing algorithm_base.h...
+         Moc'ing algorithm_operate_thread.h...
+       ClCompile:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I.\GeneratedFiles /I. /ID:\Qt\Qt5.7.1\5.7\msvc2013\include /I.\GeneratedFiles\Debug /ID:\Qt\Qt5.7.1\5.7\msvc2013\include\QtCore /ID:\Qt\Qt5.7.1\5.7\msvc2013\include\QtNetwork /ID:\Qt\Qt5.7.1\5.7\msvc2013\include\QtSql /Zi /nologo /W1 /WX- /MP /Od /Oy- /D UNICODE /D WIN32 /D WIN64 /D QT_DLL /D QT_CORE_LIB /D QT_NETWORK_LIB /D QT_SQL_LIB /D DEALALGORITHM_LIB /D _WINDLL /Gm- /EHsc /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt algorithm_operate_thread.cpp algorithm_base.cpp GeneratedFiles\Debug\moc_algorithm_base.cpp GeneratedFiles\Debug\moc_algorithm_operate_thread.cpp import_dll_class.cpp
+         algorithm_operate_thread.cpp
+         algorithm_base.cpp
+         moc_algorithm_base.cpp
+         moc_algorithm_operate_thread.cpp
+         import_dll_class.cpp
+       Link:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"..\exec-win32\\DealAlgorithm.dll" /NOLOGO /LIBPATH:D:\Qt\Qt5.7.1\5.7\msvc2013\lib qtmaind.lib Qt5Cored.lib Qt5Networkd.lib Qt5Sqld.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"..\exec-win32\DealAlgorithm.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\exec-win32\DealAlgorithm.lib" /MACHINE:X86 /SAFESEH /DLL Debug\algorithm_operate_thread.obj
+         Debug\algorithm_base.obj
+         Debug\moc_algorithm_base.obj
+         Debug\moc_algorithm_operate_thread.obj
+         Debug\import_dll_class.obj
+            正在创建库 ..\exec-win32\DealAlgorithm.lib 和对象 ..\exec-win32\DealAlgorithm.exp
+         DealAlgorithm.vcxproj -> D:\software_现场\太和VAISP\VAISP\DealAlgorithm\..\exec-win32\DealAlgorithm.dll
+     1>已完成生成项目“D:\software_现场\太和VAISP\VAISP\DealAlgorithm\DealAlgorithm.vcxproj”(Rebuild 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:18.00

@@ -1,0 +1,9 @@
+﻿生成启动时间为 2021/1/12 15:59:52。
+     1>项目“D:\software_现场\太和VAISP\VAISP\DealCommon\DealCommon.vcxproj”在节点 4 上(Rebuild 个目标)。
+     1>QtMsBuildNotFound:
+         QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly.
+     1>已完成生成项目“D:\software_现场\太和VAISP\VAISP\DealCommon\DealCommon.vcxproj”(Rebuild 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:00.84

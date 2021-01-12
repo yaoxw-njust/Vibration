@@ -1,0 +1,40 @@
+﻿生成启动时间为 2020/11/17 18:04:02。
+     1>项目“D:\Desktop\VAIS\DealLogic\DealLogic.vcxproj”在节点 2 上(Rebuild 个目标)。
+     1>CustomBuild:
+         Moc'ing network_logic.h...
+         Moc'ing main_logic_udp.h...
+         Moc'ing udp_logic.h...
+         Moc'ing tcp_logic.h...
+         Moc'ing main_logic_tcp.h...
+       ClCompile:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I"C:\libirimager-8.6.0-windows\irDirectSDK\sdk" /I.\GeneratedFiles /I. /IC:\Qt\Qt5.6.2\5.6\msvc2013_64\include /I.\GeneratedFiles\Debug /IC:\Qt\Qt5.6.2\5.6\msvc2013_64\include\QtCore /IC:\Qt\Qt5.6.2\5.6\msvc2013_64\include\QtNetwork /I"C:\Program Files\MVTec\HALCON-19.05-Progress\include\hdevengine" /I"C:\Program Files\MVTec\HALCON-19.05-Progress\include\halconcpp" /I"C:\Program Files\MVTec\HALCON-19.05-Progress\include" /IC:\Qt\Qt5.6.2\5.6\msvc2013_64\include\QtSql /Zi /nologo /W1 /WX- /MP /Od /D UNICODE /D WIN32 /D WIN64 /D QT_DLL /D QT_CORE_LIB /D QT_NETWORK_LIB /D DEALLOGIC_LIB /D QT_SQL_LIB /D _WINDLL /Gm- /EHsc /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt GeneratedFiles\Debug\moc_main_logic_tcp.cpp GeneratedFiles\Debug\moc_main_logic_udp.cpp GeneratedFiles\Debug\moc_network_logic.cpp GeneratedFiles\Debug\moc_tcp_logic.cpp GeneratedFiles\Debug\moc_udp_logic.cpp import_dll_class.cpp main_logic_udp.cpp main_logic_tcp.cpp network_logic.cpp tcp_logic.cpp udp_logic.cpp
+         moc_main_logic_tcp.cpp
+         moc_main_logic_udp.cpp
+         moc_network_logic.cpp
+         moc_tcp_logic.cpp
+         moc_udp_logic.cpp
+         import_dll_class.cpp
+         main_logic_udp.cpp
+         main_logic_tcp.cpp
+         network_logic.cpp
+         tcp_logic.cpp
+         udp_logic.cpp
+       Link:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"..\exec\\DealLogic.dll" /NOLOGO /LIBPATH:"C:\libirimager-8.6.0-windows\irDirectSDK\sdk\x64" /LIBPATH:"C:\Program Files\MVTec\HALCON-19.05-Progress\lib\x64-win64" /LIBPATH:C:\Qt\Qt5.6.2\5.6\msvc2013_64\lib qtmaind.lib Qt5Cored.lib Qt5Networkd.lib halconcpp.lib hdevenginecpp.lib Qt5Sqld.lib libirimagerd.lib opencv_world310d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"..\exec\DealLogic.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\exec\DealLogic.lib" /MACHINE:X64 /DLL x64\Debug\moc_main_logic_tcp.obj
+         x64\Debug\moc_main_logic_udp.obj
+         x64\Debug\moc_network_logic.obj
+         x64\Debug\moc_tcp_logic.obj
+         x64\Debug\moc_udp_logic.obj
+         x64\Debug\import_dll_class.obj
+         x64\Debug\main_logic_udp.obj
+         x64\Debug\main_logic_tcp.obj
+         x64\Debug\network_logic.obj
+         x64\Debug\tcp_logic.obj
+         x64\Debug\udp_logic.obj
+            正在创建库 ..\exec\DealLogic.lib 和对象 ..\exec\DealLogic.exp
+         DealLogic.vcxproj -> D:\Desktop\VAIS\DealLogic\..\exec\DealLogic.dll
+     1>已完成生成项目“D:\Desktop\VAIS\DealLogic\DealLogic.vcxproj”(Rebuild 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:05.37
