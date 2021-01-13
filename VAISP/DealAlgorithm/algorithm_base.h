@@ -23,7 +23,7 @@ public:
 	virtual void initialETHDLL();
 	virtual void openDevice();
 	virtual void startGrab(QString strTrainRunNumber="20201121125815");
-	virtual void stopGrab(QString strTrainNumber = "098099", QString strLineNumber = "07", 
+	virtual void stopGrab(QString strTrainNumber = "099100", QString strLineNumber = "14", 
 		QString strControlPort = "0");
 	virtual void closeDevice();
 	virtual void simulateTrigger(QString strTrainNumber);
@@ -127,10 +127,10 @@ private:
 	std::vector<double> t1, t2, t3, t4;
 
 	QString m_strTrainRunNumber = "20201121125815";
-	QString m_strTrainNumber = "098099";
-	QString m_strLineNumber = "07";
+	QString m_strTrainNumber = "099100";
+	QString m_strLineNumber = "14";
 	QString m_strMainControlPort = "0";
-	QString m_strStation = QStringLiteral("ƒœ’æ");
+	QString m_strStation = QStringLiteral("’Ú¡˙±±");
 
 
 public:

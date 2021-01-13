@@ -162,7 +162,7 @@ void AlgorithmOperate::temperatureCalculate()
 				maxTemperature = 0.60 + tempRundDecimal;
 			}
 			bearPalteTemperatureDivided[1].push_back(maxTemperature * 50);
-			bearPalteTemperatureDivided[2].push_back(std::fabs(((environmentTemperature - averageTemperature) * 50)+2));
+			bearPalteTemperatureDivided[2].push_back(std::fabs(((environmentTemperature - averageTemperature) * 50))+2);
 			averageTemperature = 0.0;
 		}
 

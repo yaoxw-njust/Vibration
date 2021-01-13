@@ -1,5 +1,5 @@
-﻿生成启动时间为 2021/1/12 14:17:17。
-     1>项目“D:\software\Vibration\zlb\Vibration\VAISP\VAIS\VAIS.vcxproj”在节点 3 上(Rebuild 个目标)。
+﻿生成启动时间为 2021/1/13 17:36:33。
+     1>项目“D:\software\Vibration\zlb\VAISP\VAIS\VAIS.vcxproj”在节点 2 上(Rebuild 个目标)。
      1>QtMsBuildNotFound:
          QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly.
        CustomBuild:
@@ -37,9 +37,10 @@
          Debug\simulate_trigger_ui.obj
          Debug\tray_menu.obj
          Debug\vais_main_form.obj
-         VAIS.vcxproj -> D:\software\Vibration\zlb\Vibration\VAISP\VAIS\..\exec-win32\VAIS.exe
-     1>已完成生成项目“D:\software\Vibration\zlb\Vibration\VAISP\VAIS\VAIS.vcxproj”(Rebuild 个目标)的操作。
+         LINK : 没有找到 ..\exec-win32\\VAIS.exe 或上一个增量链接没有生成它；正在执行完全链接
+         VAIS.vcxproj -> D:\software\Vibration\zlb\VAISP\VAIS\..\exec-win32\VAIS.exe
+     1>已完成生成项目“D:\software\Vibration\zlb\VAISP\VAIS\VAIS.vcxproj”(Rebuild 个目标)的操作。
 
 生成成功。
 
-已用时间 00:00:35.43
+已用时间 00:00:33.24

@@ -1,5 +1,5 @@
-﻿生成启动时间为 2021/1/12 14:17:18。
-     1>项目“D:\software\Vibration\zlb\Vibration\VAISP\DealAlgorithm\DealAlgorithm.vcxproj”在节点 2 上(Rebuild 个目标)。
+﻿生成启动时间为 2021/1/13 17:36:35。
+     1>项目“D:\software\Vibration\zlb\VAISP\DealAlgorithm\DealAlgorithm.vcxproj”在节点 4 上(Rebuild 个目标)。
      1>QtMsBuildNotFound:
          QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly.
        CustomBuild:
@@ -18,10 +18,11 @@
          Debug\moc_algorithm_base.obj
          Debug\moc_algorithm_operate_thread.obj
          Debug\import_dll_class.obj
+         LINK : 没有找到 ..\exec-win32\\DealAlgorithm.dll 或上一个增量链接没有生成它；正在执行完全链接
             正在创建库 ..\exec-win32\DealAlgorithm.lib 和对象 ..\exec-win32\DealAlgorithm.exp
-         DealAlgorithm.vcxproj -> D:\software\Vibration\zlb\Vibration\VAISP\DealAlgorithm\..\exec-win32\DealAlgorithm.dll
-     1>已完成生成项目“D:\software\Vibration\zlb\Vibration\VAISP\DealAlgorithm\DealAlgorithm.vcxproj”(Rebuild 个目标)的操作。
+         DealAlgorithm.vcxproj -> D:\software\Vibration\zlb\VAISP\DealAlgorithm\..\exec-win32\DealAlgorithm.dll
+     1>已完成生成项目“D:\software\Vibration\zlb\VAISP\DealAlgorithm\DealAlgorithm.vcxproj”(Rebuild 个目标)的操作。
 
 生成成功。
 
-已用时间 00:00:21.75
+已用时间 00:00:19.13

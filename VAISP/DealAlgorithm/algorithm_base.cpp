@@ -1025,8 +1025,8 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 				value << QString::number(wheel_num) << QString::number(vibrateDataL[0][z]) <<
 					QString::number(vibrateDataL[1][z]) << QString::number(vibrateDataL[2][z]) <<
 					QString::number(vibrateDataL[3][z]) << QString::number(vibrateDataL[4][z]) <<
-					QString::number(axleDataL[1][z]) << QString::number(axleDataL[2][z]) << m_strTrainRunNumber
-					<< QString::number(m_dEnvironmentTemp);
+					QString::number(axleDataL[0][z]) << QString::number(axleDataL[2][z]) << m_strTrainRunNumber
+					<<QString::number(m_dEnvironmentTemp);
 			}
 			else
 			{
@@ -1041,8 +1041,8 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 				value << QString::number(wheel_num) << QString::number(vibrateDataR[0][z]) <<
 					QString::number(vibrateDataR[1][z]) << QString::number(vibrateDataR[2][z]) <<
 					QString::number(vibrateDataR[3][z]) << QString::number(vibrateDataR[4][z]) <<
-					QString::number(axleDataR[1][z]) << QString::number(axleDataR[2][z]) << m_strTrainRunNumber
-					<< QString::number(m_dEnvironmentTemp);
+					QString::number(axleDataR[0][z]) << QString::number(axleDataR[2][z]) << m_strTrainRunNumber
+					<<QString::number(m_dEnvironmentTemp);
 			}
 			bool ret = m_pMySqlHelper->writeSqlData("vt_info", key, value);
 			if (ret)
@@ -1077,8 +1077,8 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 				value << QString::number(wheel_num) << QString::number(vibrateDataL[0][z]) <<
 					QString::number(vibrateDataL[1][z]) << QString::number(vibrateDataL[2][z]) <<
 					QString::number(vibrateDataL[3][z]) << QString::number(vibrateDataL[4][z]) <<
-					QString::number(axleDataL[1][z]) << QString::number(axleDataL[2][z]) << m_strTrainRunNumber
-					<< QString::number(m_dEnvironmentTemp);
+					QString::number(axleDataL[0][z]) << QString::number(axleDataL[2][z]) << m_strTrainRunNumber
+					<<QString::number(m_dEnvironmentTemp);
 			}
 			else
 			{
@@ -1093,8 +1093,8 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 				value << QString::number(wheel_num) << QString::number(vibrateDataR[0][z]) <<
 					QString::number(vibrateDataR[1][z]) << QString::number(vibrateDataR[2][z]) <<
 					QString::number(vibrateDataR[3][z]) << QString::number(vibrateDataR[4][z]) <<
-					QString::number(axleDataR[1][z]) << QString::number(axleDataR[2][z]) << m_strTrainRunNumber
-					<< QString::number(m_dEnvironmentTemp);
+					QString::number(axleDataR[0][z]) << QString::number(axleDataR[2][z]) << m_strTrainRunNumber
+					<<QString::number(m_dEnvironmentTemp);
 			}
 
 			bool ret = m_pMySqlHelper->writeSqlData("vt_info", key, value);
