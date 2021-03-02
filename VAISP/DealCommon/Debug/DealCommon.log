@@ -1,0 +1,9 @@
+﻿生成启动时间为 2021/3/2 星期二 15:37:00。
+     1>项目“F:\振动系统\7号线软件\VAISP\DealCommon\DealCommon.vcxproj”在节点 3 上(Rebuild 个目标)。
+     1>QtMsBuildNotFound:
+         QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly.
+     1>已完成生成项目“F:\振动系统\7号线软件\VAISP\DealCommon\DealCommon.vcxproj”(Rebuild 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:00.07
