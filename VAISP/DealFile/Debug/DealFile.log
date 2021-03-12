@@ -1,5 +1,5 @@
-﻿生成启动时间为 2021/3/2 星期二 15:37:00。
-     1>项目“F:\振动系统\7号线软件\VAISP\DealFile\DealFile.vcxproj”在节点 5 上(Rebuild 个目标)。
+﻿生成启动时间为 2021/3/3 星期三 17:40:10。
+     1>项目“F:\software\acquition-software\Vibration\广州南站\Vibration\VAISP\DealFile\DealFile.vcxproj”在节点 5 上(Rebuild 个目标)。
      1>QtMsBuildNotFound:
          QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly.
        CustomBuild:
@@ -16,9 +16,9 @@
          Debug\log_helper.obj
          Debug\mysql_helper.obj
             正在创建库 ..\exec-win32\DealFile.lib 和对象 ..\exec-win32\DealFile.exp
-         DealFile.vcxproj -> F:\振动系统\7号线软件\VAISP\DealFile\..\exec-win32\DealFile.dll
-     1>已完成生成项目“F:\振动系统\7号线软件\VAISP\DealFile\DealFile.vcxproj”(Rebuild 个目标)的操作。
+         DealFile.vcxproj -> F:\software\acquition-software\Vibration\广州南站\Vibration\VAISP\DealFile\..\exec-win32\DealFile.dll
+     1>已完成生成项目“F:\software\acquition-software\Vibration\广州南站\Vibration\VAISP\DealFile\DealFile.vcxproj”(Rebuild 个目标)的操作。
 
 生成成功。
 
-已用时间 00:00:13.60
+已用时间 00:00:10.82

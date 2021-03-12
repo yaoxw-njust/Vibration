@@ -1,5 +1,5 @@
-﻿生成启动时间为 2021/3/2 星期二 15:37:00。
-     1>项目“F:\振动系统\7号线软件\VAISP\VAIS\VAIS.vcxproj”在节点 2 上(Rebuild 个目标)。
+﻿生成启动时间为 2021/3/3 星期三 17:40:10。
+     1>项目“F:\software\acquition-software\Vibration\广州南站\Vibration\VAISP\VAIS\VAIS.vcxproj”在节点 3 上(Rebuild 个目标)。
      1>QtMsBuildNotFound:
          QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly.
        CustomBuild:
@@ -37,9 +37,9 @@
          Debug\simulate_trigger_ui.obj
          Debug\tray_menu.obj
          Debug\vais_main_form.obj
-         VAIS.vcxproj -> F:\振动系统\7号线软件\VAISP\VAIS\..\exec-win32\VAIS.exe
-     1>已完成生成项目“F:\振动系统\7号线软件\VAISP\VAIS\VAIS.vcxproj”(Rebuild 个目标)的操作。
+         VAIS.vcxproj -> F:\software\acquition-software\Vibration\广州南站\Vibration\VAISP\VAIS\..\exec-win32\VAIS.exe
+     1>已完成生成项目“F:\software\acquition-software\Vibration\广州南站\Vibration\VAISP\VAIS\VAIS.vcxproj”(Rebuild 个目标)的操作。
 
 生成成功。
 
-已用时间 00:00:25.68
+已用时间 00:00:23.21

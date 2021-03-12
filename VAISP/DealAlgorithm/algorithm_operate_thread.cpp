@@ -260,11 +260,11 @@ void AlgorithmOperate::electricalTemperatureCalculate()
 				vect4.push_back(j);
 		}
 
-		if (vect3.size() == 0 || vect4.size() ==0)
+		/*if (vect3.size() == 0 || vect4.size() ==0)
 		{
 			logHelper->writeError("algoritmRunLog", QStringLiteral("electricalTemperatureCalculate:vect2数据分离异常，位置标记：") + QString::number(m_nFlag));
 			return;
-		}
+		}*/
 
 		int buzhang = vect3.size();
 		if (vect3.size()>vect4.size())
