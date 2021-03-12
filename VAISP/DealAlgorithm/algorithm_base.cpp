@@ -236,13 +236,6 @@ void AlgorithmBase::startGrab(QString strTrainRunNumber)
 			algorithmSendMsg(QStringLiteral("采集仪增益设置异常"), 1);
 		}
 
-		/*socket_index = ConnectCreate(int_ip, 1600, 0, 1, 500, 3);
-		if (socket_index < 0)
-		{
-			m_bIsOpen = false;
-			algorithmSendMsg(QStringLiteral("创建连接出现异常，错误代码为：") + QString::number(socket_index), 1);
-		}*/
-
 		if (m_bIsOpen)
 		{
 			try
@@ -540,6 +533,12 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 	double motortemp_max;
 	double motortempinc_max;
 
+	//20210302 yxw add:查询振动综合值的报警、预警值
+	double zdzhz_warn; int zdzhz_warn_num = 0;
+	double zdzhz_alarm; int zdzhz_alarm_num = 0;
+	double zdzhz_ka = 0.5;//比例系数默认0.5
+	double zdzhz_kb = 0.5;
+	
 	if (m_pMySqlHelper->openSql())
 	{
 #pragma region 从数据库读取预警和报警参数
@@ -580,6 +579,17 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 		motortempinc_warn = strSqlRead.toFloat();
 		m_pMySqlHelper->readSqlValue("train_param", "motortempinc_alarm", strSqlRead);
 		motortempinc_alarm = strSqlRead.toFloat();
+
+		//20210302 yxw add:start
+		m_pMySqlHelper->readSqlValue("train_param", "zdzhz_warn", strSqlRead);
+		zdzhz_warn = strSqlRead.toFloat();
+		m_pMySqlHelper->readSqlValue("train_param", "zdzhz_alarm", strSqlRead);
+		zdzhz_alarm = strSqlRead.toFloat();
+		m_pMySqlHelper->readSqlValue("train_param", "xishuA", strSqlRead);
+		zdzhz_ka = strSqlRead.toFloat();
+		m_pMySqlHelper->readSqlValue("train_param", "xishuB", strSqlRead);
+		zdzhz_kb = strSqlRead.toFloat();
+		//20210302 yxw add:end
 
 		algorithmSendMsg(QStringLiteral("预警及报警参数加载完成"), 0);
 
@@ -708,6 +718,41 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 		}
 
 #pragma endregion
+
+// 20210302 yxw add:start
+#pragma region 计算左侧振动综合值报警和预警数
+		int lengthL = vibrateDataL[0].size();
+		for (int i = 0; i < lengthL;i++)
+		{
+			double zdzhzL = vibrateDataL[0][i] * zdzhz_ka + vibrateDataL[1][i] * zdzhz_kb;
+			if (zdzhzL >= zdzhz_alarm)
+			{
+				zdzhz_alarm_num++;
+			}
+			else if (zdzhzL < zdzhz_alarm && zdzhzL >= zdzhz_warn)
+			{
+				zdzhz_warn_num++;
+			}
+		}
+#pragma endregion
+
+#pragma region 计算右侧振动综合值报警和预警数
+		int lengthR = vibrateDataR[0].size();
+		for (int i = 0; i < lengthR; i++)
+		{
+			double zdzhzR = vibrateDataR[0][i] * zdzhz_ka + vibrateDataR[1][i] * zdzhz_kb;
+			if (zdzhzR >= zdzhz_alarm)
+			{
+				zdzhz_alarm_num++;
+			}
+			else if (zdzhzR < zdzhz_alarm && zdzhzR >= zdzhz_warn)
+			{
+				zdzhz_warn_num++;
+			}
+		}
+#pragma endregion
+
+// 20210302 yxw add:end
 
 #pragma region 计算左侧轴温报警和预警数
 		for (std::vector<double>::iterator it = axleDataL[1].begin(); it != axleDataL[1].end(); it++)
@@ -844,14 +889,16 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 			*std::max_element(electricalDataL[2].begin(), electricalDataL[2].end()) : *std::max_element(electricalDataR[2].begin(), electricalDataR[2].end()));
 
 		int state = 4;
-		if (jfg_alarm_num > 0 || fz_alarm_num > 0 || fzyz_alarm_num > 0 || qdyz_alarm_num > 0 || zw_alarm_num > 0 || motortemp_alarm_num > 0 || qd_alarm_num > 0 || zwinc_alarm_num > 0 || motortempinc_alarm_num > 0)
+		// 20210302 yxw modify:start
+		if (zdzhz_alarm_num > 0 || zw_alarm_num > 0 || motortemp_alarm_num > 0 || zwinc_alarm_num > 0 || motortempinc_alarm_num > 0)
 		{
 			state = 1;
 		}
-		else if (jfg_warn_num > 0 || fz_warn_num > 0 || fzyz_warn_num > 0 || qdyz_warn_num > 0 || zw_warn_num > 0 || motortemp_warn_num > 0 || qd_warn_num > 0 || zwinc_warn_num > 0 || motortempinc_warn_num > 0)
+		else if (zdzhz_warn_num > 0 || zw_warn_num > 0 || motortemp_warn_num > 0 || zwinc_warn_num > 0 || motortempinc_warn_num > 0)
 		{
 			state = 2;
 		}
+		// 20210302 yxw modify:end
 
 
 

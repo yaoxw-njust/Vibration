@@ -75,15 +75,21 @@ void AlgorithmOperate::initialData(std::vector<double>v1, std::vector<double>v2,
 void AlgorithmOperate::preprocess()
 {
 	//磁钢信号预处理
-	std::replace_if(G2.begin(), G2.end(), std::bind2nd(std::greater<double>(), 5), 1);
-	std::replace_if(G2.begin(), G2.end(), std::bind2nd(std::less<double>(), 1), 0);
-	std::replace_if(G3.begin(), G3.end(), std::bind2nd(std::greater<double>(), 5), 1);
-	std::replace_if(G3.begin(), G3.end(), std::bind2nd(std::less<double>(), 1), 0);
-	std::replace_if(G4.begin(), G4.end(), std::bind2nd(std::greater<double>(), 5), 1);
-	std::replace_if(G4.begin(), G4.end(), std::bind2nd(std::less<double>(), 1), 0);
+	if (G2.size()<10)
+	{
+		logHelper->writeError("algoritmRunLog", QStringLiteral("preprocess:G2数据异常，位置标记：") + QString::number(m_nFlag));
+	}
+	else
+	{
+		std::replace_if(G2.begin(), G2.end(), std::bind2nd(std::greater<double>(), 5), 1);
+		std::replace_if(G2.begin(), G2.end(), std::bind2nd(std::less<double>(), 1), 0);
+		std::replace_if(G3.begin(), G3.end(), std::bind2nd(std::greater<double>(), 5), 1);
+		std::replace_if(G3.begin(), G3.end(), std::bind2nd(std::less<double>(), 1), 0);
+		std::replace_if(G4.begin(), G4.end(), std::bind2nd(std::greater<double>(), 5), 1);
+		std::replace_if(G4.begin(), G4.end(), std::bind2nd(std::less<double>(), 1), 0);
 
-	logHelper->writeError("algoritmRunLog", QStringLiteral("磁钢信号预处理完成，位置标记：") + QString::number(m_nFlag));
-
+		logHelper->writeError("algoritmRunLog", QStringLiteral("preprocess:磁钢信号预处理完成，位置标记：") + QString::number(m_nFlag));
+	}
 }
 
 void AlgorithmOperate::temperatureCalculate()
@@ -117,10 +123,10 @@ void AlgorithmOperate::temperatureCalculate()
 			}
 		}
 
-		logHelper->writeError("algoritmRunLog", QStringLiteral("温度分轮成功，分轮数尺度为：") + QString::number(m_nAxleMarkG2.size()));
+		logHelper->writeError("algoritmRunLog", QStringLiteral("temperatureCalculate：G2分轮完成，分轮数尺度为：") + QString::number(m_nAxleMarkG2.size()));
 		if (48 != m_nAxleMarkG2.size())
 		{
-			logHelper->writeError("algoritmRunLog", QStringLiteral("m_nAxleMarkG2数据异常，位置标记：") + QString::number(m_nFlag));
+			logHelper->writeError("algoritmRunLog", QStringLiteral("temperatureCalculate：m_nAxleMarkG2数据异常，位置标记：") + QString::number(m_nFlag));
 			return;
 		}
 
@@ -141,7 +147,7 @@ void AlgorithmOperate::temperatureCalculate()
 			}
 			if (0 == bearPalteSignalDivided[i].size())
 			{
-				logHelper->writeError("algoritmRunLog", QStringLiteral("bearPalteSignalDivided无数据，位置标记：") + QString::number(m_nFlag));
+				logHelper->writeError("algoritmRunLog", QStringLiteral("temperatureCalculate：bearPalteSignalDivided无数据，位置标记：") + QString::number(m_nFlag));
 				return;
 			}
 
@@ -162,15 +168,15 @@ void AlgorithmOperate::temperatureCalculate()
 				maxTemperature = 0.60 + tempRundDecimal;
 			}
 			bearPalteTemperatureDivided[1].push_back(maxTemperature * 50);
-			bearPalteTemperatureDivided[2].push_back(std::fabs(((environmentTemperature - averageTemperature) * 50)+2));
+			bearPalteTemperatureDivided[2].push_back(std::fabs(((environmentTemperature - averageTemperature) * 50))+2);
 			averageTemperature = 0.0;
 		}
 
-		logHelper->writeError("algoritmRunLog", QStringLiteral("轴承端盖温度特征值计算完成, 位置标记：") + QString::number(m_nFlag));
+		logHelper->writeError("algoritmRunLog", QStringLiteral("temperatureCalculate：轴承端盖温度特征值计算完成, 位置标记：") + QString::number(m_nFlag));
 	}
 	catch (...)
 	{
-		logHelper->writeError("algoritmRunLog", QStringLiteral("轴承端盖温度特征值计算出现异常, 位置标记：") + QString::number(m_nFlag));
+		logHelper->writeError("algoritmRunLog", QStringLiteral("temperatureCalculate：轴承端盖温度特征值计算出现异常, 位置标记：") + QString::number(m_nFlag));
 	}
 }
 
@@ -183,7 +189,7 @@ void AlgorithmOperate::electricalTemperatureCalculate()
 
 	if (m_nAxleMarkG2.size() != 48)
 	{
-		logHelper->writeError("algoritmRunLog", QStringLiteral("m_nAxleMarkG2数据不是48个，数据异常，位置标记：") + QString::number(m_nFlag));
+		logHelper->writeError("algoritmRunLog", QStringLiteral("electricalTemperatureCalculate:m_nAxleMarkG2数据不是48个，数据异常，位置标记：") + QString::number(m_nFlag));
 		return;
 	}
 	std::copy(T1.begin(), T1.begin() + m_nAxleMarkG2[0], std::back_inserter(tempData));
@@ -238,7 +244,7 @@ void AlgorithmOperate::electricalTemperatureCalculate()
 		std::copy(electricalFloorSignalDivided[i].begin(), electricalFloorSignalDivided[i].end(), std::back_inserter(vect2));
 		if (vect2.size() < 2)
 		{
-			logHelper->writeError("algoritmRunLog", QStringLiteral("vect2数据异常，位置标记：") + QString::number(m_nFlag));
+			logHelper->writeError("algoritmRunLog", QStringLiteral("electricalTemperatureCalculate:vect2数据异常，位置标记：") + QString::number(m_nFlag));
 			return;
 		}
 
@@ -254,11 +260,11 @@ void AlgorithmOperate::electricalTemperatureCalculate()
 				vect4.push_back(j);
 		}
 
-		if (vect3.size() == 0 || vect4.size() ==0)
+		/*if (vect3.size() == 0 || vect4.size() ==0)
 		{
-			logHelper->writeError("algoritmRunLog", QStringLiteral("vect2数据分离异常，位置标记：") + QString::number(m_nFlag));
+			logHelper->writeError("algoritmRunLog", QStringLiteral("electricalTemperatureCalculate:vect2数据分离异常，位置标记：") + QString::number(m_nFlag));
 			return;
-		}
+		}*/
 
 		int buzhang = vect3.size();
 		if (vect3.size()>vect4.size())
@@ -344,7 +350,7 @@ void AlgorithmOperate::electricalTemperatureCalculate()
 		std::vector<int>().swap(vect3);
 		std::vector<int>().swap(vect4);
 
-		logHelper->writeError("algoritmRunLog", QStringLiteral("电机温度计算完成, 位置标记：") + QString::number(m_nFlag));
+		logHelper->writeError("algoritmRunLog", QStringLiteral("electricalTemperatureCalculate:电机温度计算完成, 位置标记：") + QString::number(m_nFlag));
 
 	}
 
@@ -395,13 +401,12 @@ void AlgorithmOperate::vibrationCalculate()
 
 	for (size_t i = 1; i < firstIndexTmp.size(); i = i + 2)
 	{
-		if ((firstIndexTmp[i] - firstIndexTmp[i - 1]) > 100)
+		if ((firstIndexTmp[i] - firstIndexTmp[i - 1]) > 30)
 		{
 			firstIndex.push_back(firstIndexTmp[i - 1]);
 			firstIndex.push_back(firstIndexTmp[i]);
 		}
 	}
-
 
 	if (firstIndex.size() != 48)
 	{
@@ -429,7 +434,7 @@ void AlgorithmOperate::vibrationCalculate()
 
 	for (size_t i = 1; i < secondIndexTmp.size(); i = i + 2)
 	{
-		if ((secondIndexTmp[i] - secondIndexTmp[i - 1]) > 100)
+		if ((secondIndexTmp[i] - secondIndexTmp[i - 1]) > 30)
 		{
 			secondIndex.push_back(secondIndexTmp[i - 1]);
 			secondIndex.push_back(secondIndexTmp[i]);
@@ -492,7 +497,7 @@ void AlgorithmOperate::vibrationCalculate()
 		std::vector<double>().swap(Kurtosis_factor_4);
 	}
 
-	logHelper->writeError("algoritmRunLog", QStringLiteral("振动特征值计算完成, 位置标记：") + QString::number(m_nFlag));
+	logHelper->writeError("algoritmRunLog", QStringLiteral("vibrationCalculate:振动特征值计算完成, 位置标记：") + QString::number(m_nFlag));
 }
 
 void AlgorithmOperate::calculateEigenvalue(std::vector<double> data, std::vector<double> &RMS_4, std::vector<double> &Peak_4, std::vector<double> &Crest_factor_4,
