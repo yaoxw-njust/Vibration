@@ -116,7 +116,7 @@ void AlgorithmOperate::temperatureCalculate()
 
 		for (size_t i = 1; i < m_nAxleMarkG2tmp.size(); i = i + 2)
 		{
-			if ((m_nAxleMarkG2tmp[i] - m_nAxleMarkG2tmp[i - 1]) > 30)
+			if ((m_nAxleMarkG2tmp[i] - m_nAxleMarkG2tmp[i - 1]) > 10)
 			{
 				m_nAxleMarkG2.push_back(m_nAxleMarkG2tmp[i - 1]);
 				m_nAxleMarkG2.push_back(m_nAxleMarkG2tmp[i]);
@@ -401,7 +401,7 @@ void AlgorithmOperate::vibrationCalculate()
 
 	for (size_t i = 1; i < firstIndexTmp.size(); i = i + 2)
 	{
-		if ((firstIndexTmp[i] - firstIndexTmp[i - 1]) > 30)
+		if ((firstIndexTmp[i] - firstIndexTmp[i - 1]) > 10)
 		{
 			firstIndex.push_back(firstIndexTmp[i - 1]);
 			firstIndex.push_back(firstIndexTmp[i]);
@@ -434,7 +434,7 @@ void AlgorithmOperate::vibrationCalculate()
 
 	for (size_t i = 1; i < secondIndexTmp.size(); i = i + 2)
 	{
-		if ((secondIndexTmp[i] - secondIndexTmp[i - 1]) > 30)
+		if ((secondIndexTmp[i] - secondIndexTmp[i - 1]) > 10)
 		{
 			secondIndex.push_back(secondIndexTmp[i - 1]);
 			secondIndex.push_back(secondIndexTmp[i]);
