@@ -15,7 +15,7 @@ void IniHelper::writeIni(QString section, QString key, QString value, QString fi
 QString IniHelper::readIniStr(QString section, QString key, QString filePath)
 {
 	QSettings setting(filePath, QSettings::IniFormat);
-	setting.setIniCodec(QTextCodec::codecForName("GB2312"));
+	setting.setIniCodec(QTextCodec::codecForName("GBK"));
 	QString objReturn = setting.value(section + "/" + key).toString();
 	return objReturn;
 }

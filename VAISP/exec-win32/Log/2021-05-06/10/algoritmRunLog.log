@@ -1,0 +1,28 @@
+2021-05-06 10:50:02:244  preprocess:磁钢信号预处理完成，位置标记：1
+2021-05-06 10:50:02:248  temperatureCalculate：G2分轮完成，分轮数尺度为：48
+2021-05-06 10:50:02:255  temperatureCalculate：轴承端盖温度特征值计算完成, 位置标记：1
+2021-05-06 10:50:02:266  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2021-05-06 10:50:02:268  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2021-05-06 10:50:02:270  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2021-05-06 10:50:02:272  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2021-05-06 10:50:02:274  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2021-05-06 10:50:02:275  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2021-05-06 10:50:02:278  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2021-05-06 10:50:02:280  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2021-05-06 10:50:02:280  车速为：79.9228位置标记为：1
+2021-05-06 10:50:02:287  vibrationCalculate:计算完成, 位置标记：1
+2021-05-06 10:50:02:420  vibrationCalculate:振动特征值计算完成, 位置标记：1
+2021-05-06 10:50:02:455  preprocess:磁钢信号预处理完成，位置标记：0
+2021-05-06 10:50:02:459  temperatureCalculate：G2分轮完成，分轮数尺度为：48
+2021-05-06 10:50:02:465  temperatureCalculate：轴承端盖温度特征值计算完成, 位置标记：0
+2021-05-06 10:50:02:470  electricalTemperatureCalculate:电机温度计算完成, 位置标记：0
+2021-05-06 10:50:02:472  electricalTemperatureCalculate:电机温度计算完成, 位置标记：0
+2021-05-06 10:50:02:474  electricalTemperatureCalculate:电机温度计算完成, 位置标记：0
+2021-05-06 10:50:02:476  electricalTemperatureCalculate:电机温度计算完成, 位置标记：0
+2021-05-06 10:50:02:477  electricalTemperatureCalculate:电机温度计算完成, 位置标记：0
+2021-05-06 10:50:02:479  electricalTemperatureCalculate:电机温度计算完成, 位置标记：0
+2021-05-06 10:50:02:481  electricalTemperatureCalculate:电机温度计算完成, 位置标记：0
+2021-05-06 10:50:02:483  electricalTemperatureCalculate:电机温度计算完成, 位置标记：0
+2021-05-06 10:50:02:484  车速为：79.9228位置标记为：0
+2021-05-06 10:50:02:491  vibrationCalculate:计算完成, 位置标记：0
+2021-05-06 10:50:02:623  vibrationCalculate:振动特征值计算完成, 位置标记：0
