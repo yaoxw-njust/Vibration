@@ -1,4 +1,4 @@
-﻿生成启动时间为 2021/3/3 星期三 17:40:10。
+﻿生成启动时间为 2021/5/7 星期五 14:45:30。
      1>项目“F:\software\acquition-software\Vibration\广州南站\Vibration\VAISP\DealLogic\DealLogic.vcxproj”在节点 4 上(Rebuild 个目标)。
      1>QtMsBuildNotFound:
          QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly.
@@ -24,4 +24,4 @@
 
 生成成功。
 
-已用时间 00:00:15.10
+已用时间 00:00:12.22
