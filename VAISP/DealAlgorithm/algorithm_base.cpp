@@ -946,7 +946,7 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 		}
 
 
-		if (jfg_alarm_num > 0 || fz_alarm_num > 0 || fzyz_alarm_num > 0 || qdyz_alarm_num > 0 || qd_alarm_num > 0)
+		if (zdzhz_alarm_num > 0)
 		{
 			key.clear(); value.clear();
 			key << "train_onlyid" << "fault_type" << "fault_rank" << "train_date";
@@ -962,7 +962,7 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 			}
 
 		}
-		else if (jfg_warn_num > 0 || fz_warn_num > 0 || fzyz_warn_num > 0 || qdyz_warn_num > 0 || qd_warn_num > 0)
+		else if (zdzhz_warn_num > 0)
 		{
 			key.clear(); value.clear();
 			key << "train_onlyid" << "fault_type" << "fault_rank" << "train_date";
