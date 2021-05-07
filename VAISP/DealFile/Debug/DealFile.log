@@ -1,4 +1,4 @@
-﻿生成启动时间为 2021/3/3 星期三 13:34:25。
+﻿生成启动时间为 2021/5/7 星期五 14:50:13。
      1>项目“F:\software\acquition-software\Vibration\窖心\Vibration\VAISP\DealFile\DealFile.vcxproj”在节点 5 上(Rebuild 个目标)。
      1>QtMsBuildNotFound:
          QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly.
@@ -15,11 +15,10 @@
          Debug\ini_helper.obj
          Debug\log_helper.obj
          Debug\mysql_helper.obj
-         LINK : 没有找到 ..\exec-win32\\DealFile.dll 或上一个增量链接没有生成它；正在执行完全链接
             正在创建库 ..\exec-win32\DealFile.lib 和对象 ..\exec-win32\DealFile.exp
          DealFile.vcxproj -> F:\software\acquition-software\Vibration\窖心\Vibration\VAISP\DealFile\..\exec-win32\DealFile.dll
      1>已完成生成项目“F:\software\acquition-software\Vibration\窖心\Vibration\VAISP\DealFile\DealFile.vcxproj”(Rebuild 个目标)的操作。
 
 生成成功。
 
-已用时间 00:00:11.45
+已用时间 00:00:11.60
