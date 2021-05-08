@@ -1,4 +1,4 @@
-﻿生成启动时间为 2021/5/7 星期五 14:45:25。
+﻿生成启动时间为 2021/5/8 星期六 9:25:06。
      1>项目“F:\software\acquition-software\Vibration\广州南站\Vibration\VAISP\VAIS\VAIS.vcxproj”在节点 2 上(Rebuild 个目标)。
      1>QtMsBuildNotFound:
          QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly.
@@ -42,4 +42,4 @@
 
 生成成功。
 
-已用时间 00:00:24.36
+已用时间 00:00:24.43
