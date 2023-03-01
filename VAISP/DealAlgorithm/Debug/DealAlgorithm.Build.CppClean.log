@@ -1,6 +1,5 @@
 f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\dealalgorithm\debug\vc120.pdb
-f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\dealalgorithm\debug\algorithm_operate_thread.obj
-f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\dealalgorithm\debug\algorithm_base.obj
+f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\dealalgorithm\generatedfiles\moc_network_logic.cpp
 f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\dealalgorithm\generatedfiles\moc_algorithm_base.cpp
 f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\dealalgorithm\generatedfiles\moc_algorithm_operate_thread.cpp
 f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\exec-win32\dealalgorithm.lib
@@ -8,9 +7,13 @@ f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\exec-win32\de
 f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\exec-win32\dealalgorithm.ilk
 f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\exec-win32\dealalgorithm.dll
 f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\exec-win32\dealalgorithm.pdb
+f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\dealalgorithm\debug\algorithm_base.obj
+f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\dealalgorithm\debug\algorithm_operate_thread.obj
 f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\dealalgorithm\debug\import_dll_class.obj
 f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\dealalgorithm\debug\moc_algorithm_base.obj
 f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\dealalgorithm\debug\moc_algorithm_operate_thread.obj
+f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\dealalgorithm\debug\moc_network_logic.obj
+f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\dealalgorithm\debug\network_logic.obj
 f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\dealalgorithm\..\exec-win32\dealalgorithm.dll
 f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\dealalgorithm\debug\dealalgorithm.tlog\cl.command.1.tlog
 f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\dealalgorithm\debug\dealalgorithm.tlog\cl.read.1.tlog

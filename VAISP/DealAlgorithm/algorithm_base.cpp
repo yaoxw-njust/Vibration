@@ -10,11 +10,1314 @@
 #include <winnt.rh>
 #include <winbase.h>
 
-#pragma comment(lib, "ws2_32.lib") 	
+//#pragma comment(lib, "ws2_32.lib") 	
+#pragma execution_character_set("utf-8")
+/********************************/
+
+
+/**********************************/
+#define MODELCODE_SDG  (QString)"SDG"
+#define MODELCODE_LVW  (QString)"LVW"
+
+#define CHECKITEMCODE_ZXXPC     (QString)"ZXXPC"
+#define CHECKITEMCODE_HWWDTX    (QString)"HWWDTX"
+#define CHECKITEMCODE_LVW_ZXWD  (QString)"LVW_ZXWD"
+#define CHECKITEMCODE_LVW_DJWD  (QString)"LVW_DJWD"
+#define CHECKITEMCODE_LVW_ZDZHZ  (QString)"LVW_ZDZHZ"
+#define CHECKITEMNAME_LVW_ZXWD  "轴箱温度"
+#define CHECKITEMNAME_LVW_DJWD  "电机温度"
+#define CHECKITEMNAME_LVW_ZDZHZ  "振动综合"
+
+#define JCPCODE_FELZDZW  (QString)"M0020-09-04"
+#define JCPCODE_FELSDG   (QString)"M0020-09-05"
+
+#define RECORDID09    (QString)"20220521183547"
+#define TIME09        (QString)"2022-05-21 18:35:47"
+#define GROUPNAME09   (QString)"09005006"
+#define JCPCODE09     (QString)"NJNZ"
+#define VIDEOPATH     (QString)"D:\\ImageMovie\\Resources\\video\\2022052118354709123124NJNZ.mp4"
+
+float djwd_alarm = 0;
+float djwd_warn = 0;
+float zhz_alarm = 0;
+float zhz_warn = 0;
+float zxwd_alarm = 0;
+float zxwd_warn = 0;
+
+void djwdAlarmSet(struct VIBRATE_DATA *pVectData, struct CARRIAGE *pCarriage, struct WHEELSET *pWeelSet, struct CHECKDATA_VIBRATE *pData)
+{
+	struct ALARM_DATAS alarm;
+	alarm.groupName = pVectData->groupName;
+	alarm.alarmTime = pVectData->checkTime;
+	alarm.carriagePos = pCarriage->carriagePos;
+	alarm.carriageNumber = pCarriage->carriageNumber;
+	alarm.modelId = 0;
+	alarm.modelCode = MODELCODE_LVW;
+	alarm.checkItemId = 0;
+	alarm.checkItemCode = CHECKITEMCODE_LVW_DJWD;
+	alarm.alarmPos1 = pWeelSet->pos;
+	alarm.alarmPos2 = 0;
+	alarm.alarmValue1 = pData->value;
+	if (alarm.alarmValue1 > djwd_alarm)
+	{
+		alarm.alarmLevel = 3;
+		pVectData->alarmNum++;
+		pVectData->alarmDatas.push_back(alarm);
+	}
+	else if (alarm.alarmValue1 > djwd_warn)
+	{
+		alarm.alarmLevel = 2;
+		pVectData->alarmNum++;
+		pVectData->alarmDatas.push_back(alarm);
+	}
+	//no alarm no push
+	return;
+}
+void zhzAlarmSet(struct VIBRATE_DATA *pVectData, struct CARRIAGE *pCarriage, struct WHEELSET *pWeelSet, struct CHECKDATA_VIBRATE *pData)
+{
+	struct ALARM_DATAS alarm;
+	alarm.groupName = pVectData->groupName;
+	alarm.alarmTime = pVectData->checkTime;
+	alarm.carriagePos = pCarriage->carriagePos;
+	alarm.carriageNumber = pCarriage->carriageNumber;
+	alarm.modelId = 0;
+	alarm.modelCode = MODELCODE_LVW;
+	alarm.checkItemId = 0;
+	alarm.checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+	alarm.alarmPos1 = pWeelSet->pos;
+	alarm.alarmPos2 = pData->axisArount;
+	alarm.alarmValue1 = pData->value;
+	if (alarm.alarmValue1 > zhz_alarm)
+	{
+		alarm.alarmLevel = 3;
+		pVectData->alarmNum++;
+		pVectData->alarmDatas.push_back(alarm);
+	}
+	else if (alarm.alarmValue1 > zhz_warn)
+	{
+		alarm.alarmLevel = 2;
+		pVectData->alarmNum++;
+		pVectData->alarmDatas.push_back(alarm);
+	}
+	//no alarm no push
+	return;
+}
+void zxwdAlarmSet(struct VIBRATE_DATA *pVectData, struct CARRIAGE *pCarriage, struct WHEELSET *pWeelSet, struct CHECKDATA_VIBRATE *pData)
+{
+	struct ALARM_DATAS alarm;
+	alarm.groupName = pVectData->groupName;
+	alarm.alarmTime = pVectData->checkTime;
+	alarm.carriagePos = pCarriage->carriagePos;
+	alarm.carriageNumber = pCarriage->carriageNumber;
+	alarm.modelId = 0;
+	alarm.modelCode = MODELCODE_LVW;
+	alarm.checkItemId = 0;
+	alarm.checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+	alarm.alarmPos1 = pWeelSet->pos;
+	alarm.alarmPos2 = pData->axisArount;
+	alarm.alarmValue1 = pData->value;
+	if (alarm.alarmValue1 > zxwd_alarm)
+	{
+		alarm.alarmLevel = 3;
+		pVectData->alarmNum++;
+		pVectData->alarmDatas.push_back(alarm);
+	}
+	else if (alarm.alarmValue1 > zxwd_warn)
+	{
+		alarm.alarmLevel = 2;
+		pVectData->alarmNum++;
+		pVectData->alarmDatas.push_back(alarm);
+	}
+	//no alarm no push
+	return;
+}
+
+
+
+BOOL IsTextUTF8(char* str, ULONGLONG length)
+{
+      DWORD nBytes = 0;//UFT8可用1-6个字节编码,ASCII用一个字节  
+      UCHAR chr;
+       BOOL bAllAscii = TRUE; //如果全部都是ASCII, 说明不是UTF-8  
+        for (int i = 0; i<length; ++i)
+         {
+             chr = *(str + i);
+             if ((chr & 0x80) != 0) // 判断是否ASCII编码,如果不是,说明有可能是UTF-8,ASCII用7位编码,但用一个字节存,最高位标记为0,o0xxxxxxx  
+                 bAllAscii = FALSE;
+             if (nBytes == 0) //如果不是ASCII码,应该是多字节符,计算字节数  
+            {
+                if (chr >= 0x80)
+                 {
+                     if (chr >= 0xFC && chr <= 0xFD)
+                         nBytes = 6;
+                     else if (chr >= 0xF8)
+                         nBytes = 5;
+                     else if (chr >= 0xF0)
+                         nBytes = 4;
+                     else if (chr >= 0xE0)
+                         nBytes = 3;
+                     else if (chr >= 0xC0)
+                         nBytes = 2;
+                    else
+                         return FALSE;
+
+                     nBytes--;
+                 }
+            }
+            else //多字节符的非首字节,应为 10xxxxxx  
+             {
+                if ((chr & 0xC0) != 0x80)
+                   return FALSE;
+
+                 nBytes--;
+            }
+         }
+      if (nBytes > 0) //违返规则  
+            return FALSE;
+    if (bAllAscii) //如果全部都是ASCII, 说明不是UTF-8  
+          return FALSE;
+
+      return TRUE;
+ }
+/***********************************/
+#include <iostream>
+#include <sstream>
+
+#include <qnetworkrequest.h>
+#include <qnetworkreply.h>
+#include <qnetworkaccessmanager.h>
+#include "network_logic.h"//http post json
+#pragma comment (lib,"Qt5Network.lib")
+size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
+{
+	string data((const char*)ptr, (size_t)size * nmemb);
+
+	*((std::stringstream*) stream) << data << endl;
+
+	return size * nmemb;
+}
+
+void AlgorithmBase::setAlarmData(float motortemp_alarm, float motortemp_warn, float zdzhz_alarm,
+	float zdzhz_warn, float zw_alarm, float zw_warn)
+{
+	djwd_alarm = motortemp_alarm;
+	djwd_warn = motortemp_warn;
+	zhz_alarm = zdzhz_alarm;
+	zhz_warn = zdzhz_warn;
+	zxwd_alarm = zw_alarm;
+	zxwd_warn = zw_warn;
+}
+void AlgorithmBase::setVibData(struct VIBRATE_DATA *pData, vector<double> zdzhz_L, vector<double> zdzhz_R,
+	vector<vector<double>> axleDataR, vector<vector<double>> axleDataL,
+	vector<vector<double>> electricalDataR, vector<vector<double>> electricalDataL)
+{
+	//-----参数(json中定义)：c++中对应定义变量------
+	//振动综合值：zdzhz_R，zdzhz_L
+	//轴箱温度：axleDataR[0],axleDataL[0] ----0代表均值，1代表峰值，传均值给json
+	//电机温度：electricalDataR[0], electricalDataL[0] ----0代表均值，1代表峰值，传均值给json
+	//环境温度(ambientTemperature)：m_dEnvironmentTemp
+	//速度(speed)：m_dTrainSpeed
+	//检测时间(checkTime)：m_strTrainRunNumber  ----列车过车流水号是以时间命名的，checkTime;需“20201121125815”转换成"2022-05-21 18:35:47"格式
+	//记录号(record_id)：m_strTrainRunNumber  ----列车过车流水号是以时间命名的，record_id:直接使用
+	//主控端：m_strMainControlPort.toInt() ---- 0：偶数端，1：奇数端，该参数不传json，只用于车厢号的处理
+	//车号(groupName)：m_strTrainNumber -----格式如"005006"，传给json的格式为"09005006"
+	//车厢号(carriageNumber)：需根据主控端和车号进行处理，格式"09A005"
+	//线路号：m_strLineNumber
+
+	pData->alarmNum = 0;
+	QString record_idStr = m_strTrainRunNumber;
+	QString m_strLineNumberStr = m_strLineNumber;
+	QString m_strTrainNumberStr = m_strTrainNumber;
+
+	//yxw add start
+	QString subTrainNumberStr1 = m_strTrainNumberStr.mid(0, 3);
+	QString subTrainNumberStr2 = m_strTrainNumberStr.mid(3, 3);
+	if (m_strMainControlPort.toInt() % 2 == 1)
+	{
+		pData->carriages[0].carriageNumber = m_strLineNumberStr + "A" + subTrainNumberStr1;
+		pData->carriages[1].carriageNumber = m_strLineNumberStr + "B" + subTrainNumberStr1;
+		pData->carriages[2].carriageNumber = m_strLineNumberStr + "C" + subTrainNumberStr1;
+		pData->carriages[3].carriageNumber = m_strLineNumberStr + "C" + subTrainNumberStr2;
+		pData->carriages[4].carriageNumber = m_strLineNumberStr + "B" + subTrainNumberStr2;
+		pData->carriages[5].carriageNumber = m_strLineNumberStr + "A" + subTrainNumberStr2;
+	}
+	else
+	{
+		pData->carriages[0].carriageNumber = m_strLineNumberStr + "A" + subTrainNumberStr2;
+		pData->carriages[1].carriageNumber = m_strLineNumberStr + "B" + subTrainNumberStr2;
+		pData->carriages[2].carriageNumber = m_strLineNumberStr + "C" + subTrainNumberStr2;
+		pData->carriages[3].carriageNumber = m_strLineNumberStr + "C" + subTrainNumberStr1;
+		pData->carriages[4].carriageNumber = m_strLineNumberStr + "B" + subTrainNumberStr1;
+		pData->carriages[5].carriageNumber = m_strLineNumberStr + "A" + subTrainNumberStr1;
+	}
+
+	QString m_strCheckTimeStr = record_idStr.mid(0, 4) + "-" + record_idStr.mid(4, 2) + "-" + record_idStr.mid(6, 2) + " " + record_idStr.mid(8, 2) + ":" + record_idStr.mid(10, 2) + ":" + record_idStr.mid(12, 2);
+	pData->checkTime = m_strCheckTimeStr;
+	//yxw add end
+
+
+	pData->record_id = record_idStr;
+	pData->groupName = "GZDT" + m_strLineNumberStr + "-" + m_strTrainNumberStr;
+
+	pData->passDw = 0;
+	pData->checkDir = 0;
+	pData->jcpCode = JCPCODE_FELZDZW;
+	pData->speed = m_dTrainSpeed;
+	pData->ambientTemperature = m_dEnvironmentTemp;
+	pData->carriageNum = 6;
+
+	pData->carriages[0].carriagePos = 1;
+	pData->carriages[0].wheelSetCount = 4;
+	//0 for (int i = 0; i < 4; i++)
+	{
+		pData->carriages[0].wheelSet[0].pos = 1;
+		pData->carriages[0].wheelSet[0].checkDataNum = 4;
+		pData->carriages[0].wheelSet[0].checkData[0].img = "";
+		pData->carriages[0].wheelSet[0].checkData[0].state = 0;
+		pData->carriages[0].wheelSet[0].checkData[0].axisArount = 0;
+		pData->carriages[0].wheelSet[0].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+		pData->carriages[0].wheelSet[0].checkData[0].value = zdzhz_R[0];
+		pData->carriages[0].wheelSet[0].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+		zhzAlarmSet(pData, &pData->carriages[0], &pData->carriages[0].wheelSet[0], &pData->carriages[0].wheelSet[0].checkData[0]);
+		pData->carriages[0].wheelSet[0].checkData[1].img = "";
+		pData->carriages[0].wheelSet[0].checkData[1].state = 0;
+		pData->carriages[0].wheelSet[0].checkData[1].axisArount = 1;
+		pData->carriages[0].wheelSet[0].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+		pData->carriages[0].wheelSet[0].checkData[1].value = zdzhz_L[0];
+		pData->carriages[0].wheelSet[0].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+		zhzAlarmSet(pData, &pData->carriages[0], &pData->carriages[0].wheelSet[0], &pData->carriages[0].wheelSet[0].checkData[1]);
+		pData->carriages[0].wheelSet[0].checkData[2].img = "";
+		pData->carriages[0].wheelSet[0].checkData[2].state = 0;
+		pData->carriages[0].wheelSet[0].checkData[2].axisArount = 0;
+		pData->carriages[0].wheelSet[0].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+		pData->carriages[0].wheelSet[0].checkData[2].value = axleDataR[0][0];
+		pData->carriages[0].wheelSet[0].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+		zxwdAlarmSet(pData, &pData->carriages[0], &pData->carriages[0].wheelSet[0], &pData->carriages[0].wheelSet[0].checkData[2]);
+		pData->carriages[0].wheelSet[0].checkData[3].img = "";
+		pData->carriages[0].wheelSet[0].checkData[3].state = 0;
+		pData->carriages[0].wheelSet[0].checkData[3].axisArount = 1;
+		pData->carriages[0].wheelSet[0].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+		pData->carriages[0].wheelSet[0].checkData[3].value = axleDataL[0][0];
+		pData->carriages[0].wheelSet[0].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+		zxwdAlarmSet(pData, &pData->carriages[0], &pData->carriages[0].wheelSet[0], &pData->carriages[0].wheelSet[0].checkData[3]);
+
+	}
+	//1 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[0].wheelSet[1].pos = 2;
+				pData->carriages[0].wheelSet[1].checkDataNum = 4;
+				pData->carriages[0].wheelSet[1].checkData[0].img = "";
+				pData->carriages[0].wheelSet[1].checkData[0].state = 0;
+				pData->carriages[0].wheelSet[1].checkData[0].axisArount = 0;
+				pData->carriages[0].wheelSet[1].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[0].wheelSet[1].checkData[0].value = zdzhz_R[1];
+				pData->carriages[0].wheelSet[1].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[0], &pData->carriages[0].wheelSet[1], &pData->carriages[0].wheelSet[1].checkData[0]);
+				pData->carriages[0].wheelSet[1].checkData[1].img = "";
+				pData->carriages[0].wheelSet[1].checkData[1].state = 0;
+				pData->carriages[0].wheelSet[1].checkData[1].axisArount = 1;
+				pData->carriages[0].wheelSet[1].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[0].wheelSet[1].checkData[1].value = zdzhz_L[1];
+				pData->carriages[0].wheelSet[1].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[0], &pData->carriages[0].wheelSet[1], &pData->carriages[0].wheelSet[1].checkData[1]);
+				pData->carriages[0].wheelSet[1].checkData[2].img = "";
+				pData->carriages[0].wheelSet[1].checkData[2].state = 0;
+				pData->carriages[0].wheelSet[1].checkData[2].axisArount = 0;
+				pData->carriages[0].wheelSet[1].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[0].wheelSet[1].checkData[2].value = axleDataR[0][1];
+				pData->carriages[0].wheelSet[1].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[0], &pData->carriages[0].wheelSet[1], &pData->carriages[0].wheelSet[1].checkData[2]);
+				pData->carriages[0].wheelSet[1].checkData[3].img = "";
+				pData->carriages[0].wheelSet[1].checkData[3].state = 0;
+				pData->carriages[0].wheelSet[1].checkData[3].axisArount = 1;
+				pData->carriages[0].wheelSet[1].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[0].wheelSet[1].checkData[3].value = axleDataL[0][1];
+				pData->carriages[0].wheelSet[1].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[0], &pData->carriages[0].wheelSet[1], &pData->carriages[0].wheelSet[1].checkData[3]);
+			}
+			//2 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[0].wheelSet[2].pos = 3;
+				pData->carriages[0].wheelSet[2].checkDataNum = 4;
+				pData->carriages[0].wheelSet[2].checkData[0].img = "";
+				pData->carriages[0].wheelSet[2].checkData[0].state = 0;
+				pData->carriages[0].wheelSet[2].checkData[0].axisArount = 0;
+				pData->carriages[0].wheelSet[2].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[0].wheelSet[2].checkData[0].value = zdzhz_R[2];
+				pData->carriages[0].wheelSet[2].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[0], &pData->carriages[0].wheelSet[2], &pData->carriages[0].wheelSet[2].checkData[0]);
+				pData->carriages[0].wheelSet[2].checkData[1].img = "";
+				pData->carriages[0].wheelSet[2].checkData[1].state = 0;
+				pData->carriages[0].wheelSet[2].checkData[1].axisArount = 1;
+				pData->carriages[0].wheelSet[2].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[0].wheelSet[2].checkData[1].value = zdzhz_L[2];  //yxw modify
+				pData->carriages[0].wheelSet[2].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[0], &pData->carriages[0].wheelSet[2], &pData->carriages[0].wheelSet[2].checkData[1]);
+				pData->carriages[0].wheelSet[2].checkData[2].img = "";
+				pData->carriages[0].wheelSet[2].checkData[2].state = 0;
+				pData->carriages[0].wheelSet[2].checkData[2].axisArount = 0;
+				pData->carriages[0].wheelSet[2].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[0].wheelSet[2].checkData[2].value = axleDataR[0][2];
+				pData->carriages[0].wheelSet[2].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[0], &pData->carriages[0].wheelSet[2], &pData->carriages[0].wheelSet[2].checkData[2]);
+				pData->carriages[0].wheelSet[2].checkData[3].img = "";
+				pData->carriages[0].wheelSet[2].checkData[3].state = 0;
+				pData->carriages[0].wheelSet[2].checkData[3].axisArount = 1;
+				pData->carriages[0].wheelSet[2].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[0].wheelSet[2].checkData[3].value = axleDataL[0][2];
+				pData->carriages[0].wheelSet[2].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[0], &pData->carriages[0].wheelSet[2], &pData->carriages[0].wheelSet[2].checkData[3]);
+			}
+			//3 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[0].wheelSet[3].pos = 4;
+				pData->carriages[0].wheelSet[3].checkDataNum = 4;
+				pData->carriages[0].wheelSet[3].checkData[0].img = "";
+				pData->carriages[0].wheelSet[3].checkData[0].state = 0;
+				pData->carriages[0].wheelSet[3].checkData[0].axisArount = 0;
+				pData->carriages[0].wheelSet[3].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[0].wheelSet[3].checkData[0].value = zdzhz_R[3];
+				pData->carriages[0].wheelSet[3].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[0], &pData->carriages[0].wheelSet[3], &pData->carriages[0].wheelSet[3].checkData[0]);
+				pData->carriages[0].wheelSet[3].checkData[1].img = "";
+				pData->carriages[0].wheelSet[3].checkData[1].state = 0;
+				pData->carriages[0].wheelSet[3].checkData[1].axisArount = 1;
+				pData->carriages[0].wheelSet[3].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[0].wheelSet[3].checkData[1].value = zdzhz_L[3];
+				pData->carriages[0].wheelSet[3].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[0], &pData->carriages[0].wheelSet[3], &pData->carriages[0].wheelSet[3].checkData[1]);
+				pData->carriages[0].wheelSet[3].checkData[2].img = "";
+				pData->carriages[0].wheelSet[3].checkData[2].state = 0;
+				pData->carriages[0].wheelSet[3].checkData[2].axisArount = 0;
+				pData->carriages[0].wheelSet[3].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[0].wheelSet[3].checkData[2].value = axleDataR[0][3];
+				pData->carriages[0].wheelSet[3].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[0], &pData->carriages[0].wheelSet[3], &pData->carriages[0].wheelSet[3].checkData[2]);
+				pData->carriages[0].wheelSet[3].checkData[3].img = "";
+				pData->carriages[0].wheelSet[3].checkData[3].state = 0;
+				pData->carriages[0].wheelSet[3].checkData[3].axisArount = 1;
+				pData->carriages[0].wheelSet[3].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[0].wheelSet[3].checkData[3].value = axleDataL[0][3];
+				pData->carriages[0].wheelSet[3].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[0], &pData->carriages[0].wheelSet[3], &pData->carriages[0].wheelSet[3].checkData[3]);
+			}
+
+			pData->carriages[1].carriagePos = 2;
+			pData->carriages[1].wheelSetCount = 4;
+			//0 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[1].wheelSet[0].pos = 1;
+				pData->carriages[1].wheelSet[0].checkDataNum = 5;
+				pData->carriages[1].wheelSet[0].checkData[0].img = "";
+				pData->carriages[1].wheelSet[0].checkData[0].state = 0;
+				pData->carriages[1].wheelSet[0].checkData[0].axisArount = 0;
+				pData->carriages[1].wheelSet[0].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[1].wheelSet[0].checkData[0].value = zdzhz_R[4];
+				pData->carriages[1].wheelSet[0].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[0], &pData->carriages[1].wheelSet[0].checkData[0]);
+				pData->carriages[1].wheelSet[0].checkData[1].img = "";
+				pData->carriages[1].wheelSet[0].checkData[1].state = 0;
+				pData->carriages[1].wheelSet[0].checkData[1].axisArount = 1;
+				pData->carriages[1].wheelSet[0].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[1].wheelSet[0].checkData[1].value = zdzhz_L[4];
+				pData->carriages[1].wheelSet[0].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[0], &pData->carriages[1].wheelSet[0].checkData[1]);
+				pData->carriages[1].wheelSet[0].checkData[2].img = "";
+				pData->carriages[1].wheelSet[0].checkData[2].state = 0;
+				pData->carriages[1].wheelSet[0].checkData[2].axisArount = 0;
+				pData->carriages[1].wheelSet[0].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[1].wheelSet[0].checkData[2].value = axleDataR[0][4];
+				pData->carriages[1].wheelSet[0].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[0], &pData->carriages[1].wheelSet[0].checkData[2]);
+				pData->carriages[1].wheelSet[0].checkData[3].img = "";
+				pData->carriages[1].wheelSet[0].checkData[3].state = 0;
+				pData->carriages[1].wheelSet[0].checkData[3].axisArount = 1;
+				pData->carriages[1].wheelSet[0].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[1].wheelSet[0].checkData[3].value = axleDataL[0][4];
+				pData->carriages[1].wheelSet[0].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[0], &pData->carriages[1].wheelSet[0].checkData[3]);
+				pData->carriages[1].wheelSet[0].checkData[4].img = "";
+				pData->carriages[1].wheelSet[0].checkData[4].state = 0;
+				pData->carriages[1].wheelSet[0].checkData[4].axisArount = 0;
+				pData->carriages[1].wheelSet[0].checkData[4].checkItemCode = CHECKITEMCODE_LVW_DJWD;
+				pData->carriages[1].wheelSet[0].checkData[4].value = electricalDataR[0][0];
+				pData->carriages[1].wheelSet[0].checkData[4].checkItemName = CHECKITEMNAME_LVW_DJWD;
+				djwdAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[0], &pData->carriages[1].wheelSet[0].checkData[4]);
+			}
+			//1 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[1].wheelSet[1].pos = 2;
+				pData->carriages[1].wheelSet[1].checkDataNum = 5;
+				pData->carriages[1].wheelSet[1].checkData[0].img = "";
+				pData->carriages[1].wheelSet[1].checkData[0].state = 0;
+				pData->carriages[1].wheelSet[1].checkData[0].axisArount = 0;
+				pData->carriages[1].wheelSet[1].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[1].wheelSet[1].checkData[0].value = zdzhz_R[5];
+				pData->carriages[1].wheelSet[1].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[1], &pData->carriages[1].wheelSet[1].checkData[0]);
+				pData->carriages[1].wheelSet[1].checkData[1].img = "";
+				pData->carriages[1].wheelSet[1].checkData[1].state = 0;
+				pData->carriages[1].wheelSet[1].checkData[1].axisArount = 1;
+				pData->carriages[1].wheelSet[1].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[1].wheelSet[1].checkData[1].value = zdzhz_L[5];
+				pData->carriages[1].wheelSet[1].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[1], &pData->carriages[1].wheelSet[1].checkData[1]);
+				pData->carriages[1].wheelSet[1].checkData[2].img = "";
+				pData->carriages[1].wheelSet[1].checkData[2].state = 0;
+				pData->carriages[1].wheelSet[1].checkData[2].axisArount = 0;
+				pData->carriages[1].wheelSet[1].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[1].wheelSet[1].checkData[2].value = axleDataR[0][5];
+				pData->carriages[1].wheelSet[1].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[1], &pData->carriages[1].wheelSet[1].checkData[2]);
+				pData->carriages[1].wheelSet[1].checkData[3].img = "";
+				pData->carriages[1].wheelSet[1].checkData[3].state = 0;
+				pData->carriages[1].wheelSet[1].checkData[3].axisArount = 1;
+				pData->carriages[1].wheelSet[1].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[1].wheelSet[1].checkData[3].value = axleDataL[0][5];
+				pData->carriages[1].wheelSet[1].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[1], &pData->carriages[1].wheelSet[1].checkData[3]);
+				pData->carriages[1].wheelSet[1].checkData[4].img = "";
+				pData->carriages[1].wheelSet[1].checkData[4].state = 0;
+				pData->carriages[1].wheelSet[1].checkData[4].axisArount = 0;
+				pData->carriages[1].wheelSet[1].checkData[4].checkItemCode = CHECKITEMCODE_LVW_DJWD;
+				pData->carriages[1].wheelSet[1].checkData[4].value = electricalDataL[0][0];
+				pData->carriages[1].wheelSet[1].checkData[4].checkItemName = CHECKITEMNAME_LVW_DJWD;
+				djwdAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[1], &pData->carriages[1].wheelSet[1].checkData[4]);
+
+			}
+			//2 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[1].wheelSet[2].pos = 3;
+				pData->carriages[1].wheelSet[2].checkDataNum = 5;
+				pData->carriages[1].wheelSet[2].checkData[0].img = "";
+				pData->carriages[1].wheelSet[2].checkData[0].state = 0;
+				pData->carriages[1].wheelSet[2].checkData[0].axisArount = 0;
+				pData->carriages[1].wheelSet[2].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[1].wheelSet[2].checkData[0].value = zdzhz_R[6];
+				pData->carriages[1].wheelSet[2].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[2], &pData->carriages[1].wheelSet[2].checkData[0]);
+				pData->carriages[1].wheelSet[2].checkData[1].img = "";
+				pData->carriages[1].wheelSet[2].checkData[1].state = 0;
+				pData->carriages[1].wheelSet[2].checkData[1].axisArount = 1;
+				pData->carriages[1].wheelSet[2].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[1].wheelSet[2].checkData[1].value = zdzhz_L[6];
+				pData->carriages[1].wheelSet[2].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[2], &pData->carriages[1].wheelSet[2].checkData[1]);
+				pData->carriages[1].wheelSet[2].checkData[2].img = "";
+				pData->carriages[1].wheelSet[2].checkData[2].state = 0;
+				pData->carriages[1].wheelSet[2].checkData[2].axisArount = 0;
+				pData->carriages[1].wheelSet[2].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[1].wheelSet[2].checkData[2].value = axleDataR[0][6];
+				pData->carriages[1].wheelSet[2].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[2], &pData->carriages[1].wheelSet[2].checkData[2]);
+				pData->carriages[1].wheelSet[2].checkData[3].img = "";
+				pData->carriages[1].wheelSet[2].checkData[3].state = 0;
+				pData->carriages[1].wheelSet[2].checkData[3].axisArount = 1;
+				pData->carriages[1].wheelSet[2].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[1].wheelSet[2].checkData[3].value = axleDataL[0][6];
+				pData->carriages[1].wheelSet[2].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[2], &pData->carriages[1].wheelSet[2].checkData[3]);
+				pData->carriages[1].wheelSet[2].checkData[4].img = "";
+				pData->carriages[1].wheelSet[2].checkData[4].state = 0;
+				pData->carriages[1].wheelSet[2].checkData[4].axisArount = 0;
+				pData->carriages[1].wheelSet[2].checkData[4].checkItemCode = CHECKITEMCODE_LVW_DJWD;
+				pData->carriages[1].wheelSet[2].checkData[4].value = electricalDataR[0][1];
+				pData->carriages[1].wheelSet[2].checkData[4].checkItemName = CHECKITEMNAME_LVW_DJWD;
+				djwdAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[2], &pData->carriages[1].wheelSet[2].checkData[4]);
+			}
+			//3 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[1].wheelSet[3].pos = 4;
+				pData->carriages[1].wheelSet[3].checkDataNum = 5;
+				pData->carriages[1].wheelSet[3].checkData[0].img = "";
+				pData->carriages[1].wheelSet[3].checkData[0].state = 0;
+				pData->carriages[1].wheelSet[3].checkData[0].axisArount = 0;
+				pData->carriages[1].wheelSet[3].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[1].wheelSet[3].checkData[0].value = zdzhz_R[7];
+				pData->carriages[1].wheelSet[3].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[3], &pData->carriages[1].wheelSet[3].checkData[0]);  //yxw modify,第三个参数改为&pData->carriages[1].wheelSet[3]
+				pData->carriages[1].wheelSet[3].checkData[1].img = "";
+				pData->carriages[1].wheelSet[3].checkData[1].state = 0;
+				pData->carriages[1].wheelSet[3].checkData[1].axisArount = 1;
+				pData->carriages[1].wheelSet[3].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[1].wheelSet[3].checkData[1].value = zdzhz_L[7];
+				pData->carriages[1].wheelSet[3].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[3], &pData->carriages[1].wheelSet[3].checkData[1]);//yxw modify,第三个参数改为&pData->carriages[1].wheelSet[3]
+				pData->carriages[1].wheelSet[3].checkData[2].img = "";
+				pData->carriages[1].wheelSet[3].checkData[2].state = 0;
+				pData->carriages[1].wheelSet[3].checkData[2].axisArount = 0;
+				pData->carriages[1].wheelSet[3].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[1].wheelSet[3].checkData[2].value = axleDataR[0][7];
+				pData->carriages[1].wheelSet[3].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[3], &pData->carriages[1].wheelSet[3].checkData[2]);//yxw modify,第三个参数改为&pData->carriages[1].wheelSet[3]
+				pData->carriages[1].wheelSet[3].checkData[3].img = "";
+				pData->carriages[1].wheelSet[3].checkData[3].state = 0;
+				pData->carriages[1].wheelSet[3].checkData[3].axisArount = 1;
+				pData->carriages[1].wheelSet[3].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[1].wheelSet[3].checkData[3].value = axleDataL[0][7];
+				pData->carriages[1].wheelSet[3].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[3], &pData->carriages[1].wheelSet[3].checkData[3]);//yxw modify,第三个参数改为&pData->carriages[1].wheelSet[3]
+				pData->carriages[1].wheelSet[3].checkData[4].img = "";
+				pData->carriages[1].wheelSet[3].checkData[4].state = 0;
+				pData->carriages[1].wheelSet[3].checkData[4].axisArount = 0;
+				pData->carriages[1].wheelSet[3].checkData[4].checkItemCode = CHECKITEMCODE_LVW_DJWD;
+				pData->carriages[1].wheelSet[3].checkData[4].value = electricalDataL[0][1];
+				pData->carriages[1].wheelSet[3].checkData[4].checkItemName = CHECKITEMNAME_LVW_DJWD;
+				djwdAlarmSet(pData, &pData->carriages[1], &pData->carriages[1].wheelSet[3], &pData->carriages[1].wheelSet[3].checkData[4]);
+			}
+
+			pData->carriages[2].carriagePos = 3;
+			pData->carriages[2].wheelSetCount = 4;
+			//0 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[2].wheelSet[0].pos = 1;
+				pData->carriages[2].wheelSet[0].checkDataNum = 5;
+				pData->carriages[2].wheelSet[0].checkData[0].img = "";
+				pData->carriages[2].wheelSet[0].checkData[0].state = 0;
+				pData->carriages[2].wheelSet[0].checkData[0].axisArount = 0;
+				pData->carriages[2].wheelSet[0].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[2].wheelSet[0].checkData[0].value = zdzhz_R[8];
+				pData->carriages[2].wheelSet[0].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[0], &pData->carriages[2].wheelSet[0].checkData[0]);
+				pData->carriages[2].wheelSet[0].checkData[1].img = "";
+				pData->carriages[2].wheelSet[0].checkData[1].state = 0;
+				pData->carriages[2].wheelSet[0].checkData[1].axisArount = 1;
+				pData->carriages[2].wheelSet[0].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[2].wheelSet[0].checkData[1].value = zdzhz_L[8];
+				pData->carriages[2].wheelSet[0].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[0], &pData->carriages[2].wheelSet[0].checkData[1]);
+				pData->carriages[2].wheelSet[0].checkData[2].img = "";
+				pData->carriages[2].wheelSet[0].checkData[2].state = 0;
+				pData->carriages[2].wheelSet[0].checkData[2].axisArount = 0;
+				pData->carriages[2].wheelSet[0].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[2].wheelSet[0].checkData[2].value = axleDataR[0][8];
+				pData->carriages[2].wheelSet[0].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[0], &pData->carriages[2].wheelSet[0].checkData[2]);
+				pData->carriages[2].wheelSet[0].checkData[3].img = "";
+				pData->carriages[2].wheelSet[0].checkData[3].state = 0;
+				pData->carriages[2].wheelSet[0].checkData[3].axisArount = 1;
+				pData->carriages[2].wheelSet[0].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[2].wheelSet[0].checkData[3].value = axleDataL[0][8];
+				pData->carriages[2].wheelSet[0].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[0], &pData->carriages[2].wheelSet[0].checkData[3]);
+				pData->carriages[2].wheelSet[0].checkData[4].img = "";
+				pData->carriages[2].wheelSet[0].checkData[4].state = 0;
+				pData->carriages[2].wheelSet[0].checkData[4].axisArount = 0;
+				pData->carriages[2].wheelSet[0].checkData[4].checkItemCode = CHECKITEMCODE_LVW_DJWD;
+				pData->carriages[2].wheelSet[0].checkData[4].value = electricalDataR[0][2];
+				pData->carriages[2].wheelSet[0].checkData[4].checkItemName = CHECKITEMNAME_LVW_DJWD;
+				djwdAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[0], &pData->carriages[2].wheelSet[0].checkData[4]);
+			}
+			//1 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[2].wheelSet[1].pos = 2;
+				pData->carriages[2].wheelSet[1].checkDataNum = 5;
+				pData->carriages[2].wheelSet[1].checkData[0].img = "";
+				pData->carriages[2].wheelSet[1].checkData[0].state = 0;
+				pData->carriages[2].wheelSet[1].checkData[0].axisArount = 0;
+				pData->carriages[2].wheelSet[1].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[2].wheelSet[1].checkData[0].value = zdzhz_R[9];
+				pData->carriages[2].wheelSet[1].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[1], &pData->carriages[2].wheelSet[1].checkData[0]);
+				pData->carriages[2].wheelSet[1].checkData[1].img = "";
+				pData->carriages[2].wheelSet[1].checkData[1].state = 0;
+				pData->carriages[2].wheelSet[1].checkData[1].axisArount = 1;
+				pData->carriages[2].wheelSet[1].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[2].wheelSet[1].checkData[1].value = zdzhz_L[9];
+				pData->carriages[2].wheelSet[1].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[1], &pData->carriages[2].wheelSet[1].checkData[1]);
+				pData->carriages[2].wheelSet[1].checkData[2].img = "";
+				pData->carriages[2].wheelSet[1].checkData[2].state = 0;
+				pData->carriages[2].wheelSet[1].checkData[2].axisArount = 0;
+				pData->carriages[2].wheelSet[1].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[2].wheelSet[1].checkData[2].value = axleDataR[0][9];
+				pData->carriages[2].wheelSet[1].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[1], &pData->carriages[2].wheelSet[1].checkData[2]);
+				pData->carriages[2].wheelSet[1].checkData[3].img = "";
+				pData->carriages[2].wheelSet[1].checkData[3].state = 0;
+				pData->carriages[2].wheelSet[1].checkData[3].axisArount = 1;
+				pData->carriages[2].wheelSet[1].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[2].wheelSet[1].checkData[3].value = axleDataL[0][9];
+				pData->carriages[2].wheelSet[1].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[1], &pData->carriages[2].wheelSet[1].checkData[3]);
+				pData->carriages[2].wheelSet[1].checkData[4].img = "";
+				pData->carriages[2].wheelSet[1].checkData[4].state = 0;
+				pData->carriages[2].wheelSet[1].checkData[4].axisArount = 0;
+				pData->carriages[2].wheelSet[1].checkData[4].checkItemCode = CHECKITEMCODE_LVW_DJWD;
+				pData->carriages[2].wheelSet[1].checkData[4].value = electricalDataL[0][2];
+				pData->carriages[2].wheelSet[1].checkData[4].checkItemName = CHECKITEMNAME_LVW_DJWD;
+				djwdAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[1], &pData->carriages[2].wheelSet[1].checkData[4]);
+			}
+			//2 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[2].wheelSet[2].pos = 3;  //yxw modify, 4 -> 3
+				pData->carriages[2].wheelSet[2].checkDataNum = 5;
+				pData->carriages[2].wheelSet[2].checkData[0].img = "";
+				pData->carriages[2].wheelSet[2].checkData[0].state = 0;
+				pData->carriages[2].wheelSet[2].checkData[0].axisArount = 0;
+				pData->carriages[2].wheelSet[2].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[2].wheelSet[2].checkData[0].value = zdzhz_R[10];
+				pData->carriages[2].wheelSet[2].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[2], &pData->carriages[2].wheelSet[2].checkData[0]);
+				pData->carriages[2].wheelSet[2].checkData[1].img = "";
+				pData->carriages[2].wheelSet[2].checkData[1].state = 0;
+				pData->carriages[2].wheelSet[2].checkData[1].axisArount = 1;
+				pData->carriages[2].wheelSet[2].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[2].wheelSet[2].checkData[1].value = zdzhz_L[10];
+				pData->carriages[2].wheelSet[2].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[2], &pData->carriages[2].wheelSet[2].checkData[1]);
+				pData->carriages[2].wheelSet[2].checkData[2].img = "";
+				pData->carriages[2].wheelSet[2].checkData[2].state = 0;
+				pData->carriages[2].wheelSet[2].checkData[2].axisArount = 0;
+				pData->carriages[2].wheelSet[2].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[2].wheelSet[2].checkData[2].value = axleDataR[0][10];
+				pData->carriages[2].wheelSet[2].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[2], &pData->carriages[2].wheelSet[2].checkData[2]);
+				pData->carriages[2].wheelSet[2].checkData[3].img = "";
+				pData->carriages[2].wheelSet[2].checkData[3].state = 0;
+				pData->carriages[2].wheelSet[2].checkData[3].axisArount = 1;
+				pData->carriages[2].wheelSet[2].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[2].wheelSet[2].checkData[3].value = axleDataL[0][10];
+				pData->carriages[2].wheelSet[2].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[2], &pData->carriages[2].wheelSet[2].checkData[3]);
+				pData->carriages[2].wheelSet[2].checkData[4].img = "";
+				pData->carriages[2].wheelSet[2].checkData[4].state = 0;
+				pData->carriages[2].wheelSet[2].checkData[4].axisArount = 0;
+				pData->carriages[2].wheelSet[2].checkData[4].checkItemCode = CHECKITEMCODE_LVW_DJWD;
+				pData->carriages[2].wheelSet[2].checkData[4].value = electricalDataR[0][3];
+				pData->carriages[2].wheelSet[2].checkData[4].checkItemName = CHECKITEMNAME_LVW_DJWD;
+				djwdAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[2], &pData->carriages[2].wheelSet[2].checkData[4]);
+			}
+			//3 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[2].wheelSet[3].pos = 4;
+				pData->carriages[2].wheelSet[3].checkDataNum = 5;
+				pData->carriages[2].wheelSet[3].checkData[0].img = "";
+				pData->carriages[2].wheelSet[3].checkData[0].state = 0;
+				pData->carriages[2].wheelSet[3].checkData[0].axisArount = 0;
+				pData->carriages[2].wheelSet[3].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[2].wheelSet[3].checkData[0].value = zdzhz_R[11];
+				pData->carriages[2].wheelSet[3].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[3], &pData->carriages[2].wheelSet[3].checkData[0]);
+				pData->carriages[2].wheelSet[3].checkData[1].img = "";
+				pData->carriages[2].wheelSet[3].checkData[1].state = 0;
+				pData->carriages[2].wheelSet[3].checkData[1].axisArount = 1;
+				pData->carriages[2].wheelSet[3].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[2].wheelSet[3].checkData[1].value = zdzhz_L[11];
+				pData->carriages[2].wheelSet[3].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[3], &pData->carriages[2].wheelSet[3].checkData[1]);
+				pData->carriages[2].wheelSet[3].checkData[2].img = "";
+				pData->carriages[2].wheelSet[3].checkData[2].state = 0;
+				pData->carriages[2].wheelSet[3].checkData[2].axisArount = 0;
+				pData->carriages[2].wheelSet[3].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[2].wheelSet[3].checkData[2].value = axleDataR[0][11];
+				pData->carriages[2].wheelSet[3].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[3], &pData->carriages[2].wheelSet[3].checkData[2]);
+				pData->carriages[2].wheelSet[3].checkData[3].img = "";
+				pData->carriages[2].wheelSet[3].checkData[3].state = 0;
+				pData->carriages[2].wheelSet[3].checkData[3].axisArount = 1;
+				pData->carriages[2].wheelSet[3].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[2].wheelSet[3].checkData[3].value = axleDataL[0][11];
+				pData->carriages[2].wheelSet[3].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[3], &pData->carriages[2].wheelSet[3].checkData[3]);
+				pData->carriages[2].wheelSet[3].checkData[4].img = "";
+				pData->carriages[2].wheelSet[3].checkData[4].state = 0;
+				pData->carriages[2].wheelSet[3].checkData[4].axisArount = 0;
+				pData->carriages[2].wheelSet[3].checkData[4].checkItemCode = CHECKITEMCODE_LVW_DJWD;
+				pData->carriages[2].wheelSet[3].checkData[4].value = electricalDataL[0][3];
+				pData->carriages[2].wheelSet[3].checkData[4].checkItemName = CHECKITEMNAME_LVW_DJWD;
+				djwdAlarmSet(pData, &pData->carriages[2], &pData->carriages[2].wheelSet[3], &pData->carriages[2].wheelSet[3].checkData[4]);
+			}
+
+
+			pData->carriages[3].carriagePos = 4;
+			pData->carriages[3].wheelSetCount = 4;
+			//3 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[3].wheelSet[3].pos = 4;
+				pData->carriages[3].wheelSet[3].checkDataNum = 5;
+				pData->carriages[3].wheelSet[3].checkData[0].img = "";
+				pData->carriages[3].wheelSet[3].checkData[0].state = 0;
+				pData->carriages[3].wheelSet[3].checkData[0].axisArount = 1;
+				pData->carriages[3].wheelSet[3].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[3].wheelSet[3].checkData[0].value = zdzhz_R[12];
+				pData->carriages[3].wheelSet[3].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[3], &pData->carriages[3].wheelSet[3].checkData[0]); // yxw modify,第三个，第四个参数改为wheelSet[3]
+				pData->carriages[3].wheelSet[3].checkData[1].img = "";
+				pData->carriages[3].wheelSet[3].checkData[1].state = 0;
+				pData->carriages[3].wheelSet[3].checkData[1].axisArount = 0;
+				pData->carriages[3].wheelSet[3].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[3].wheelSet[3].checkData[1].value = zdzhz_L[12];
+				pData->carriages[3].wheelSet[3].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[3], &pData->carriages[3].wheelSet[3].checkData[1]);// yxw modify,第三个，第四个参数改为wheelSet[3]
+				pData->carriages[3].wheelSet[3].checkData[2].img = "";
+				pData->carriages[3].wheelSet[3].checkData[2].state = 0;
+				pData->carriages[3].wheelSet[3].checkData[2].axisArount = 1;
+				pData->carriages[3].wheelSet[3].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[3].wheelSet[3].checkData[2].value = axleDataR[0][12];
+				pData->carriages[3].wheelSet[3].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[3], &pData->carriages[3].wheelSet[3].checkData[2]);
+				pData->carriages[3].wheelSet[3].checkData[3].img = "";
+				pData->carriages[3].wheelSet[3].checkData[3].state = 0;
+				pData->carriages[3].wheelSet[3].checkData[3].axisArount = 0;
+				pData->carriages[3].wheelSet[3].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[3].wheelSet[3].checkData[3].value = axleDataL[0][12];
+				pData->carriages[3].wheelSet[3].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[3], &pData->carriages[3].wheelSet[3].checkData[3]);
+				pData->carriages[3].wheelSet[3].checkData[4].img = "";
+				pData->carriages[3].wheelSet[3].checkData[4].state = 0;
+				pData->carriages[3].wheelSet[3].checkData[4].axisArount = 0;
+				pData->carriages[3].wheelSet[3].checkData[4].checkItemCode = CHECKITEMCODE_LVW_DJWD;
+				pData->carriages[3].wheelSet[3].checkData[4].value = electricalDataR[0][4];  //yxw modify, 后面三节车厢同样修改
+				pData->carriages[3].wheelSet[3].checkData[4].checkItemName = CHECKITEMNAME_LVW_DJWD;
+				djwdAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[3], &pData->carriages[3].wheelSet[3].checkData[4]);
+			}
+			//2for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[3].wheelSet[2].pos = 3;
+				pData->carriages[3].wheelSet[2].checkDataNum = 5;
+				pData->carriages[3].wheelSet[2].checkData[0].img = "";
+				pData->carriages[3].wheelSet[2].checkData[0].state = 0;
+				pData->carriages[3].wheelSet[2].checkData[0].axisArount = 1;
+				pData->carriages[3].wheelSet[2].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[3].wheelSet[2].checkData[0].value = zdzhz_R[13];
+				pData->carriages[3].wheelSet[2].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[2], &pData->carriages[3].wheelSet[2].checkData[0]);
+				pData->carriages[3].wheelSet[2].checkData[1].img = "";
+				pData->carriages[3].wheelSet[2].checkData[1].state = 0;
+				pData->carriages[3].wheelSet[2].checkData[1].axisArount = 0;
+				pData->carriages[3].wheelSet[2].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[3].wheelSet[2].checkData[1].value = zdzhz_L[13];
+				pData->carriages[3].wheelSet[2].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[2], &pData->carriages[3].wheelSet[2].checkData[1]);
+				pData->carriages[3].wheelSet[2].checkData[2].img = "";
+				pData->carriages[3].wheelSet[2].checkData[2].state = 0;
+				pData->carriages[3].wheelSet[2].checkData[2].axisArount = 1;
+				pData->carriages[3].wheelSet[2].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[3].wheelSet[2].checkData[2].value = axleDataR[0][13];
+				pData->carriages[3].wheelSet[2].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[2], &pData->carriages[3].wheelSet[2].checkData[2]);
+				pData->carriages[3].wheelSet[2].checkData[3].img = "";
+				pData->carriages[3].wheelSet[2].checkData[3].state = 0;
+				pData->carriages[3].wheelSet[2].checkData[3].axisArount = 0;
+				pData->carriages[3].wheelSet[2].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[3].wheelSet[2].checkData[3].value = axleDataL[0][13];
+				pData->carriages[3].wheelSet[2].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[2], &pData->carriages[3].wheelSet[2].checkData[3]);
+				pData->carriages[3].wheelSet[2].checkData[4].img = "";
+				pData->carriages[3].wheelSet[2].checkData[4].state = 0;
+				pData->carriages[3].wheelSet[2].checkData[4].axisArount = 0;
+				pData->carriages[3].wheelSet[2].checkData[4].checkItemCode = CHECKITEMCODE_LVW_DJWD;
+				pData->carriages[3].wheelSet[2].checkData[4].value = electricalDataL[0][4];  //yxw modify, 后面三节车厢同样修改
+				pData->carriages[3].wheelSet[2].checkData[4].checkItemName = CHECKITEMNAME_LVW_DJWD;
+				djwdAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[2], &pData->carriages[3].wheelSet[2].checkData[4]);
+			}
+			//1 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[3].wheelSet[1].pos = 2;
+				pData->carriages[3].wheelSet[1].checkDataNum = 5;
+				pData->carriages[3].wheelSet[1].checkData[0].img = "";
+				pData->carriages[3].wheelSet[1].checkData[0].state = 0;
+				pData->carriages[3].wheelSet[1].checkData[0].axisArount = 1;
+				pData->carriages[3].wheelSet[1].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[3].wheelSet[1].checkData[0].value = zdzhz_R[14];
+				pData->carriages[3].wheelSet[1].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[1], &pData->carriages[3].wheelSet[1].checkData[0]);
+				pData->carriages[3].wheelSet[1].checkData[1].img = "";
+				pData->carriages[3].wheelSet[1].checkData[1].state = 0;
+				pData->carriages[3].wheelSet[1].checkData[1].axisArount = 0;
+				pData->carriages[3].wheelSet[1].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[3].wheelSet[1].checkData[1].value = zdzhz_L[14];
+				pData->carriages[3].wheelSet[1].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[1], &pData->carriages[3].wheelSet[1].checkData[1]);
+				pData->carriages[3].wheelSet[1].checkData[2].img = "";
+				pData->carriages[3].wheelSet[1].checkData[2].state = 0;
+				pData->carriages[3].wheelSet[1].checkData[2].axisArount = 1;
+				pData->carriages[3].wheelSet[1].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[3].wheelSet[1].checkData[2].value = axleDataR[0][14];
+				pData->carriages[3].wheelSet[1].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[1], &pData->carriages[3].wheelSet[1].checkData[2]);
+				pData->carriages[3].wheelSet[1].checkData[3].img = "";
+				pData->carriages[3].wheelSet[1].checkData[3].state = 0;
+				pData->carriages[3].wheelSet[1].checkData[3].axisArount = 0;
+				pData->carriages[3].wheelSet[1].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[3].wheelSet[1].checkData[3].value = axleDataL[0][14];
+				pData->carriages[3].wheelSet[1].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[1], &pData->carriages[3].wheelSet[1].checkData[3]);
+				pData->carriages[3].wheelSet[1].checkData[4].img = "";
+				pData->carriages[3].wheelSet[1].checkData[4].state = 0;
+				pData->carriages[3].wheelSet[1].checkData[4].axisArount = 0;
+				pData->carriages[3].wheelSet[1].checkData[4].checkItemCode = CHECKITEMCODE_LVW_DJWD;
+				pData->carriages[3].wheelSet[1].checkData[4].value = electricalDataR[0][5];
+				pData->carriages[3].wheelSet[1].checkData[4].checkItemName = CHECKITEMNAME_LVW_DJWD;
+				djwdAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[1], &pData->carriages[3].wheelSet[1].checkData[4]);
+			}
+
+			//0 for (int i = 0; i < 4; i++)
+				{
+					pData->carriages[3].wheelSet[0].pos = 1;
+					pData->carriages[3].wheelSet[0].checkDataNum = 5;
+					pData->carriages[3].wheelSet[0].checkData[0].img = "";
+					pData->carriages[3].wheelSet[0].checkData[0].state = 0;
+					pData->carriages[3].wheelSet[0].checkData[0].axisArount = 1;
+					pData->carriages[3].wheelSet[0].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+					pData->carriages[3].wheelSet[0].checkData[0].value = zdzhz_R[15];
+					pData->carriages[3].wheelSet[0].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+					zhzAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[0], &pData->carriages[3].wheelSet[0].checkData[0]);
+					pData->carriages[3].wheelSet[0].checkData[1].img = "";
+					pData->carriages[3].wheelSet[0].checkData[1].state = 0;
+					pData->carriages[3].wheelSet[0].checkData[1].axisArount = 0;
+					pData->carriages[3].wheelSet[0].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+					pData->carriages[3].wheelSet[0].checkData[1].value = zdzhz_L[15];
+					pData->carriages[3].wheelSet[0].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+					zhzAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[0], &pData->carriages[3].wheelSet[0].checkData[1]);
+					pData->carriages[3].wheelSet[0].checkData[2].img = "";
+					pData->carriages[3].wheelSet[0].checkData[2].state = 0;
+					pData->carriages[3].wheelSet[0].checkData[2].axisArount = 1;
+					pData->carriages[3].wheelSet[0].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+					pData->carriages[3].wheelSet[0].checkData[2].value = axleDataR[0][15];
+					pData->carriages[3].wheelSet[0].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+					zxwdAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[0], &pData->carriages[3].wheelSet[0].checkData[2]);
+					pData->carriages[3].wheelSet[0].checkData[3].img = "";
+					pData->carriages[3].wheelSet[0].checkData[3].state = 0;
+					pData->carriages[3].wheelSet[0].checkData[3].axisArount = 0;
+					pData->carriages[3].wheelSet[0].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+					pData->carriages[3].wheelSet[0].checkData[3].value = axleDataL[0][15];
+					pData->carriages[3].wheelSet[0].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+					zxwdAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[0], &pData->carriages[3].wheelSet[0].checkData[3]);
+					pData->carriages[3].wheelSet[0].checkData[4].img = "";
+					pData->carriages[3].wheelSet[0].checkData[4].state = 0;
+					pData->carriages[3].wheelSet[0].checkData[4].axisArount = 0;
+					pData->carriages[3].wheelSet[0].checkData[4].checkItemCode = CHECKITEMCODE_LVW_DJWD;
+					pData->carriages[3].wheelSet[0].checkData[4].value = electricalDataL[0][5];
+					pData->carriages[3].wheelSet[0].checkData[4].checkItemName = CHECKITEMNAME_LVW_DJWD;
+					djwdAlarmSet(pData, &pData->carriages[3], &pData->carriages[3].wheelSet[0], &pData->carriages[3].wheelSet[0].checkData[4]);
+				}
+
+				pData->carriages[4].carriagePos = 5;
+				pData->carriages[4].wheelSetCount = 4;
+				//3 for (int i = 0; i < 4; i++)
+				{
+					pData->carriages[4].wheelSet[3].pos = 4;
+					pData->carriages[4].wheelSet[3].checkDataNum = 5;
+					pData->carriages[4].wheelSet[3].checkData[0].img = "";
+					pData->carriages[4].wheelSet[3].checkData[0].state = 0;
+					pData->carriages[4].wheelSet[3].checkData[0].axisArount = 1;
+					pData->carriages[4].wheelSet[3].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+					pData->carriages[4].wheelSet[3].checkData[0].value = zdzhz_R[16];
+					pData->carriages[4].wheelSet[3].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+					zhzAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[3], &pData->carriages[4].wheelSet[3].checkData[0]);
+					pData->carriages[4].wheelSet[3].checkData[1].img = "";
+					pData->carriages[4].wheelSet[3].checkData[1].state = 0;
+					pData->carriages[4].wheelSet[3].checkData[1].axisArount = 0;
+					pData->carriages[4].wheelSet[3].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+					pData->carriages[4].wheelSet[3].checkData[1].value = zdzhz_L[16];
+					pData->carriages[4].wheelSet[3].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+					zhzAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[3], &pData->carriages[4].wheelSet[3].checkData[1]);
+					pData->carriages[4].wheelSet[3].checkData[2].img = "";
+					pData->carriages[4].wheelSet[3].checkData[2].state = 0;
+					pData->carriages[4].wheelSet[3].checkData[2].axisArount = 1;
+					pData->carriages[4].wheelSet[3].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+					pData->carriages[4].wheelSet[3].checkData[2].value = axleDataR[0][16];
+					pData->carriages[4].wheelSet[3].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+					zxwdAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[3], &pData->carriages[4].wheelSet[3].checkData[2]);
+					pData->carriages[4].wheelSet[3].checkData[3].img = "";
+					pData->carriages[4].wheelSet[3].checkData[3].state = 0;
+					pData->carriages[4].wheelSet[3].checkData[3].axisArount = 0;
+					pData->carriages[4].wheelSet[3].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+					pData->carriages[4].wheelSet[3].checkData[3].value = axleDataL[0][16];
+					pData->carriages[4].wheelSet[3].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+					zxwdAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[3], &pData->carriages[4].wheelSet[3].checkData[3]);
+					pData->carriages[4].wheelSet[3].checkData[4].img = "";
+					pData->carriages[4].wheelSet[3].checkData[4].state = 0;
+					pData->carriages[4].wheelSet[3].checkData[4].axisArount = 0;
+					pData->carriages[4].wheelSet[3].checkData[4].checkItemCode = CHECKITEMCODE_LVW_DJWD;
+					pData->carriages[4].wheelSet[3].checkData[4].value = electricalDataR[0][6];
+					pData->carriages[4].wheelSet[3].checkData[4].checkItemName = CHECKITEMNAME_LVW_DJWD;
+					djwdAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[3], &pData->carriages[4].wheelSet[3].checkData[4]);
+				}
+				//2 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[4].wheelSet[2].pos = 3;
+				pData->carriages[4].wheelSet[2].checkDataNum = 5;
+				pData->carriages[4].wheelSet[2].checkData[0].img = "";
+				pData->carriages[4].wheelSet[2].checkData[0].state = 0;
+				pData->carriages[4].wheelSet[2].checkData[0].axisArount = 1;
+				pData->carriages[4].wheelSet[2].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[4].wheelSet[2].checkData[0].value = zdzhz_R[17];
+				pData->carriages[4].wheelSet[2].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[2], &pData->carriages[4].wheelSet[2].checkData[0]);
+				pData->carriages[4].wheelSet[2].checkData[1].img = "";
+				pData->carriages[4].wheelSet[2].checkData[1].state = 0;
+				pData->carriages[4].wheelSet[2].checkData[1].axisArount = 0;
+				pData->carriages[4].wheelSet[2].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[4].wheelSet[2].checkData[1].value = zdzhz_L[17];
+				pData->carriages[4].wheelSet[2].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[2], &pData->carriages[4].wheelSet[2].checkData[1]);
+				pData->carriages[4].wheelSet[2].checkData[2].img = "";
+				pData->carriages[4].wheelSet[2].checkData[2].state = 0;
+				pData->carriages[4].wheelSet[2].checkData[2].axisArount = 1;
+				pData->carriages[4].wheelSet[2].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[4].wheelSet[2].checkData[2].value = axleDataR[0][17];
+				pData->carriages[4].wheelSet[2].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[2], &pData->carriages[4].wheelSet[2].checkData[2]);
+				pData->carriages[4].wheelSet[2].checkData[3].img = "";
+				pData->carriages[4].wheelSet[2].checkData[3].state = 0;
+				pData->carriages[4].wheelSet[2].checkData[3].axisArount = 0;
+				pData->carriages[4].wheelSet[2].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[4].wheelSet[2].checkData[3].value = axleDataL[0][17];
+				pData->carriages[4].wheelSet[2].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[2], &pData->carriages[4].wheelSet[2].checkData[3]);
+				pData->carriages[4].wheelSet[2].checkData[4].img = "";
+				pData->carriages[4].wheelSet[2].checkData[4].state = 0;
+				pData->carriages[4].wheelSet[2].checkData[4].axisArount = 0;
+				pData->carriages[4].wheelSet[2].checkData[4].checkItemCode = CHECKITEMCODE_LVW_DJWD;
+				pData->carriages[4].wheelSet[2].checkData[4].value = electricalDataL[0][6];
+				pData->carriages[4].wheelSet[2].checkData[4].checkItemName = CHECKITEMNAME_LVW_DJWD;
+				djwdAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[2], &pData->carriages[4].wheelSet[2].checkData[4]);
+			}
+			//1 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[4].wheelSet[1].pos = 2;
+				pData->carriages[4].wheelSet[1].checkDataNum = 5;
+				pData->carriages[4].wheelSet[1].checkData[0].img = "";
+				pData->carriages[4].wheelSet[1].checkData[0].state = 0;
+				pData->carriages[4].wheelSet[1].checkData[0].axisArount = 1;
+				pData->carriages[4].wheelSet[1].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[4].wheelSet[1].checkData[0].value = zdzhz_R[18];
+				pData->carriages[4].wheelSet[1].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[1], &pData->carriages[4].wheelSet[1].checkData[0]);
+				pData->carriages[4].wheelSet[1].checkData[1].img = "";
+				pData->carriages[4].wheelSet[1].checkData[1].state = 0;
+				pData->carriages[4].wheelSet[1].checkData[1].axisArount = 0;
+				pData->carriages[4].wheelSet[1].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[4].wheelSet[1].checkData[1].value = zdzhz_L[18];
+				pData->carriages[4].wheelSet[1].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[1], &pData->carriages[4].wheelSet[1].checkData[1]);
+				pData->carriages[4].wheelSet[1].checkData[2].img = "";
+				pData->carriages[4].wheelSet[1].checkData[2].state = 0;
+				pData->carriages[4].wheelSet[1].checkData[2].axisArount = 1;
+				pData->carriages[4].wheelSet[1].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[4].wheelSet[1].checkData[2].value = axleDataR[0][18];
+				pData->carriages[4].wheelSet[1].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[1], &pData->carriages[4].wheelSet[1].checkData[2]);
+				pData->carriages[4].wheelSet[1].checkData[3].img = "";
+				pData->carriages[4].wheelSet[1].checkData[3].state = 0;
+				pData->carriages[4].wheelSet[1].checkData[3].axisArount = 0;
+				pData->carriages[4].wheelSet[1].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[4].wheelSet[1].checkData[3].value = axleDataL[0][18];
+				pData->carriages[4].wheelSet[1].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[1], &pData->carriages[4].wheelSet[1].checkData[3]);
+				pData->carriages[4].wheelSet[1].checkData[4].img = "";
+				pData->carriages[4].wheelSet[1].checkData[4].state = 0;
+				pData->carriages[4].wheelSet[1].checkData[4].axisArount = 0;
+				pData->carriages[4].wheelSet[1].checkData[4].checkItemCode = CHECKITEMCODE_LVW_DJWD;
+				pData->carriages[4].wheelSet[1].checkData[4].value = electricalDataR[0][7];
+				pData->carriages[4].wheelSet[1].checkData[4].checkItemName = CHECKITEMNAME_LVW_DJWD;
+				djwdAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[1], &pData->carriages[4].wheelSet[1].checkData[4]);
+			}
+			//0 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[4].wheelSet[0].pos = 1;
+				pData->carriages[4].wheelSet[0].checkDataNum = 5;
+				pData->carriages[4].wheelSet[0].checkData[0].img = "";
+				pData->carriages[4].wheelSet[0].checkData[0].state = 0;
+				pData->carriages[4].wheelSet[0].checkData[0].axisArount = 1;
+				pData->carriages[4].wheelSet[0].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[4].wheelSet[0].checkData[0].value = zdzhz_R[19];
+				pData->carriages[4].wheelSet[0].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[0], &pData->carriages[4].wheelSet[0].checkData[0]);
+				pData->carriages[4].wheelSet[0].checkData[1].img = "";
+				pData->carriages[4].wheelSet[0].checkData[1].state = 0;
+				pData->carriages[4].wheelSet[0].checkData[1].axisArount = 0;
+				pData->carriages[4].wheelSet[0].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[4].wheelSet[0].checkData[1].value = zdzhz_L[19];
+				pData->carriages[4].wheelSet[0].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[0], &pData->carriages[4].wheelSet[0].checkData[1]);
+				pData->carriages[4].wheelSet[0].checkData[2].img = "";
+				pData->carriages[4].wheelSet[0].checkData[2].state = 0;
+				pData->carriages[4].wheelSet[0].checkData[2].axisArount = 1;
+				pData->carriages[4].wheelSet[0].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[4].wheelSet[0].checkData[2].value = axleDataR[0][19];
+				pData->carriages[4].wheelSet[0].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[0], &pData->carriages[4].wheelSet[0].checkData[2]);
+				pData->carriages[4].wheelSet[0].checkData[3].img = "";
+				pData->carriages[4].wheelSet[0].checkData[3].state = 0;
+				pData->carriages[4].wheelSet[0].checkData[3].axisArount = 0;
+				pData->carriages[4].wheelSet[0].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[4].wheelSet[0].checkData[3].value = axleDataL[0][19];
+				pData->carriages[4].wheelSet[0].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[0], &pData->carriages[4].wheelSet[0].checkData[3]);
+				pData->carriages[4].wheelSet[0].checkData[4].img = "";
+				pData->carriages[4].wheelSet[0].checkData[4].state = 0;
+				pData->carriages[4].wheelSet[0].checkData[4].axisArount = 0;
+				pData->carriages[4].wheelSet[0].checkData[4].checkItemCode = CHECKITEMCODE_LVW_DJWD;
+				pData->carriages[4].wheelSet[0].checkData[4].value = electricalDataL[0][7];
+				pData->carriages[4].wheelSet[0].checkData[4].checkItemName = CHECKITEMNAME_LVW_DJWD;
+				djwdAlarmSet(pData, &pData->carriages[4], &pData->carriages[4].wheelSet[0], &pData->carriages[4].wheelSet[0].checkData[4]);
+			}
+
+			pData->carriages[5].carriagePos = 6;
+			pData->carriages[5].wheelSetCount = 4;
+			//3 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[5].wheelSet[3].pos = 4;
+				pData->carriages[5].wheelSet[3].checkDataNum = 4;
+				pData->carriages[5].wheelSet[3].checkData[0].img = "";
+				pData->carriages[5].wheelSet[3].checkData[0].state = 0;
+				pData->carriages[5].wheelSet[3].checkData[0].axisArount = 1;
+				pData->carriages[5].wheelSet[3].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[5].wheelSet[3].checkData[0].value = zdzhz_R[20];
+				pData->carriages[5].wheelSet[3].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[5], &pData->carriages[5].wheelSet[3], &pData->carriages[5].wheelSet[3].checkData[0]);
+				pData->carriages[5].wheelSet[3].checkData[1].img = "";
+				pData->carriages[5].wheelSet[3].checkData[1].state = 0;
+				pData->carriages[5].wheelSet[3].checkData[1].axisArount = 0;
+				pData->carriages[5].wheelSet[3].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[5].wheelSet[3].checkData[1].value = zdzhz_L[20];
+				pData->carriages[5].wheelSet[3].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[5], &pData->carriages[5].wheelSet[3], &pData->carriages[5].wheelSet[3].checkData[1]);
+				pData->carriages[5].wheelSet[3].checkData[2].img = "";
+				pData->carriages[5].wheelSet[3].checkData[2].state = 0;
+				pData->carriages[5].wheelSet[3].checkData[2].axisArount = 1;
+				pData->carriages[5].wheelSet[3].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[5].wheelSet[3].checkData[2].value = axleDataR[0][20];
+				pData->carriages[5].wheelSet[3].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[5], &pData->carriages[5].wheelSet[3], &pData->carriages[5].wheelSet[3].checkData[2]);
+				pData->carriages[5].wheelSet[3].checkData[3].img = "";
+				pData->carriages[5].wheelSet[3].checkData[3].state = 0;
+				pData->carriages[5].wheelSet[3].checkData[3].axisArount = 0;
+				pData->carriages[5].wheelSet[3].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[5].wheelSet[3].checkData[3].value = axleDataL[0][20];
+				pData->carriages[5].wheelSet[3].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[5], &pData->carriages[5].wheelSet[3], &pData->carriages[5].wheelSet[3].checkData[3]);
+			}
+			//2 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[5].wheelSet[2].pos = 3;
+				pData->carriages[5].wheelSet[2].checkDataNum = 4;
+				pData->carriages[5].wheelSet[2].checkData[0].img = "";
+				pData->carriages[5].wheelSet[2].checkData[0].state = 0;
+				pData->carriages[5].wheelSet[2].checkData[0].axisArount = 1;
+				pData->carriages[5].wheelSet[2].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[5].wheelSet[2].checkData[0].value = zdzhz_R[21];
+				pData->carriages[5].wheelSet[2].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[5], &pData->carriages[5].wheelSet[2], &pData->carriages[5].wheelSet[2].checkData[0]);
+				pData->carriages[5].wheelSet[2].checkData[1].img = "";
+				pData->carriages[5].wheelSet[2].checkData[1].state = 0;
+				pData->carriages[5].wheelSet[2].checkData[1].axisArount = 0;
+				pData->carriages[5].wheelSet[2].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[5].wheelSet[2].checkData[1].value = zdzhz_L[21];
+				pData->carriages[5].wheelSet[2].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[5], &pData->carriages[5].wheelSet[2], &pData->carriages[5].wheelSet[2].checkData[1]);
+				pData->carriages[5].wheelSet[2].checkData[2].img = "";
+				pData->carriages[5].wheelSet[2].checkData[2].state = 0;
+				pData->carriages[5].wheelSet[2].checkData[2].axisArount = 1;
+				pData->carriages[5].wheelSet[2].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[5].wheelSet[2].checkData[2].value = axleDataR[0][21];
+				pData->carriages[5].wheelSet[2].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[5], &pData->carriages[5].wheelSet[2], &pData->carriages[5].wheelSet[2].checkData[2]);
+				pData->carriages[5].wheelSet[2].checkData[3].img = "";
+				pData->carriages[5].wheelSet[2].checkData[3].state = 0;
+				pData->carriages[5].wheelSet[2].checkData[3].axisArount = 0;
+				pData->carriages[5].wheelSet[2].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[5].wheelSet[2].checkData[3].value = axleDataL[0][21];
+				pData->carriages[5].wheelSet[2].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[5], &pData->carriages[5].wheelSet[2], &pData->carriages[5].wheelSet[2].checkData[3]);
+			}
+			//1 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[5].wheelSet[1].pos = 2;
+				pData->carriages[5].wheelSet[1].checkDataNum = 4;
+				pData->carriages[5].wheelSet[1].checkData[0].img = "";
+				pData->carriages[5].wheelSet[1].checkData[0].state = 0;
+				pData->carriages[5].wheelSet[1].checkData[0].axisArount = 1;
+				pData->carriages[5].wheelSet[1].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[5].wheelSet[1].checkData[0].value = zdzhz_R[22];
+				pData->carriages[5].wheelSet[1].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[5], &pData->carriages[5].wheelSet[1], &pData->carriages[5].wheelSet[1].checkData[0]);
+				pData->carriages[5].wheelSet[1].checkData[1].img = "";
+				pData->carriages[5].wheelSet[1].checkData[1].state = 0;
+				pData->carriages[5].wheelSet[1].checkData[1].axisArount = 0;
+				pData->carriages[5].wheelSet[1].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[5].wheelSet[1].checkData[1].value = zdzhz_L[22];
+				pData->carriages[5].wheelSet[1].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[5], &pData->carriages[5].wheelSet[1], &pData->carriages[5].wheelSet[1].checkData[1]);
+				pData->carriages[5].wheelSet[1].checkData[2].img = "";
+				pData->carriages[5].wheelSet[1].checkData[2].state = 0;
+				pData->carriages[5].wheelSet[1].checkData[2].axisArount = 1;
+				pData->carriages[5].wheelSet[1].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[5].wheelSet[1].checkData[2].value = axleDataR[0][22];
+				pData->carriages[5].wheelSet[1].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[5], &pData->carriages[5].wheelSet[1], &pData->carriages[5].wheelSet[1].checkData[2]);
+				pData->carriages[5].wheelSet[1].checkData[3].img = "";
+				pData->carriages[5].wheelSet[1].checkData[3].state = 0;
+				pData->carriages[5].wheelSet[1].checkData[3].axisArount = 0;
+				pData->carriages[5].wheelSet[1].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[5].wheelSet[1].checkData[3].value = axleDataL[0][22];
+				pData->carriages[5].wheelSet[1].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[5], &pData->carriages[5].wheelSet[1], &pData->carriages[5].wheelSet[1].checkData[3]);
+			}
+			//0 for (int i = 0; i < 4; i++)
+			{
+				pData->carriages[5].wheelSet[0].pos = 1;
+				pData->carriages[5].wheelSet[0].checkDataNum = 4;
+				pData->carriages[5].wheelSet[0].checkData[0].img = "";
+				pData->carriages[5].wheelSet[0].checkData[0].state = 0;
+				pData->carriages[5].wheelSet[0].checkData[0].axisArount = 1;  //yxw modify
+				pData->carriages[5].wheelSet[0].checkData[0].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[5].wheelSet[0].checkData[0].value = zdzhz_R[23];
+				pData->carriages[5].wheelSet[0].checkData[0].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[5], &pData->carriages[5].wheelSet[0], &pData->carriages[5].wheelSet[0].checkData[0]);
+				pData->carriages[5].wheelSet[0].checkData[1].img = "";
+				pData->carriages[5].wheelSet[0].checkData[1].state = 0;
+				pData->carriages[5].wheelSet[0].checkData[1].axisArount = 0;  //yxw modify
+				pData->carriages[5].wheelSet[0].checkData[1].checkItemCode = CHECKITEMCODE_LVW_ZDZHZ;
+				pData->carriages[5].wheelSet[0].checkData[1].value = zdzhz_L[23];
+				pData->carriages[5].wheelSet[0].checkData[1].checkItemName = CHECKITEMNAME_LVW_ZDZHZ;
+				zhzAlarmSet(pData, &pData->carriages[5], &pData->carriages[5].wheelSet[0], &pData->carriages[5].wheelSet[0].checkData[1]);
+				pData->carriages[5].wheelSet[0].checkData[2].img = "";
+				pData->carriages[5].wheelSet[0].checkData[2].state = 0;
+				pData->carriages[5].wheelSet[0].checkData[2].axisArount = 1;  //yxw modify
+				pData->carriages[5].wheelSet[0].checkData[2].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[5].wheelSet[0].checkData[2].value = axleDataR[0][23];
+				pData->carriages[5].wheelSet[0].checkData[2].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[5], &pData->carriages[5].wheelSet[0], &pData->carriages[5].wheelSet[0].checkData[2]);
+				pData->carriages[5].wheelSet[0].checkData[3].img = "";
+				pData->carriages[5].wheelSet[0].checkData[3].state = 0;
+				pData->carriages[5].wheelSet[0].checkData[3].axisArount = 0;  //yxw modify
+				pData->carriages[5].wheelSet[0].checkData[3].checkItemCode = CHECKITEMCODE_LVW_ZXWD;
+				pData->carriages[5].wheelSet[0].checkData[3].value = axleDataL[0][23];
+				pData->carriages[5].wheelSet[0].checkData[3].checkItemName = CHECKITEMNAME_LVW_ZXWD;
+				zxwdAlarmSet(pData, &pData->carriages[5], &pData->carriages[5].wheelSet[0], &pData->carriages[5].wheelSet[0].checkData[3]);
+			}
+}
+
+void AlgorithmBase::vibrateDataToJson(struct VIBRATE_DATA *pData)
+{
+	if (NULL == pData)
+	{
+		return;
+	}
+
+	//m_Semaphore.acquire(16);
+	QJsonObject  totalData;
+
+	qDebug() << "vibrateDataToJson start";
+	//algorithmSendMsg(QStringLiteral("vibrateDataToJson start"), 0);
+
+	totalData.insert("record_id", pData->record_id);
+	totalData.insert("groupName", pData->groupName);
+	totalData.insert("checkTime", pData->checkTime);
+	totalData["passDw"] = pData->passDw;
+	totalData["checkDir"] = pData->checkDir;
+	totalData.insert("jcpCode", pData->jcpCode);
+	totalData["speed"] = pData->speed;
+	totalData["ambientTemperature"] = pData->ambientTemperature;
+
+	QJsonArray carriage_list;
+
+	for (int i = 0; i<pData->carriageNum; i++)
+	{
+		QJsonObject carriage;
+		carriage["carriageNumber"] = pData->carriages[i].carriageNumber;
+		carriage["carriagePos"] = pData->carriages[i].carriagePos;
+		carriage["wheelSetCount"] = pData->carriages[i].wheelSetCount;
+		QJsonArray wheelSet_list;
+		for (int j = 0; j<pData->carriages[i].wheelSetCount; j++)
+		{
+
+			QJsonObject wheelSet;
+			wheelSet["pos"] = pData->carriages[i].wheelSet[j].pos;
+
+			QJsonArray checkData_list;
+			for (int k = 0; k<pData->carriages[i].wheelSet[j].checkDataNum; k++)
+			{
+				QJsonObject checkData;
+				checkData["img"] = pData->carriages[i].wheelSet[j].checkData[k].img;
+				checkData["state"] = pData->carriages[i].wheelSet[j].checkData[k].state;
+				checkData["axisArount"] = pData->carriages[i].wheelSet[j].checkData[k].axisArount;
+				checkData["checkItemCode"] = pData->carriages[i].wheelSet[j].checkData[k].checkItemCode;
+				checkData["value"] = pData->carriages[i].wheelSet[j].checkData[k].value;
+				checkData["checkItemName"] = pData->carriages[i].wheelSet[j].checkData[k].checkItemName;
+				checkData_list.append(checkData);
+			}
+			wheelSet["checkData"] = checkData_list;
+			wheelSet_list.append(wheelSet);
+
+		}
+		carriage["wheelSet"] = wheelSet_list;
+		carriage_list.append(carriage);
+	}
+	totalData["carriages"] = carriage_list;
+
+	QJsonArray alarm_list;
+
+	for (int i = 0; i<pData->alarmNum; i++)
+	{
+		QJsonObject alarm;
+		alarm["groupName"] = pData->alarmDatas[i].groupName;
+		alarm["alarmTime"] = pData->alarmDatas[i].alarmTime;
+		alarm["carriagePos"] = pData->alarmDatas[i].carriagePos;
+		alarm["carriageNumber"] = pData->alarmDatas[i].carriageNumber;
+		alarm["modelId"] = pData->alarmDatas[i].modelId;
+		alarm["modelCode"] = pData->alarmDatas[i].modelCode;
+		alarm["checkItemId"] = pData->alarmDatas[i].checkItemId;
+		alarm["checkItemCode"] = pData->alarmDatas[i].checkItemCode;
+
+		alarm["alarmPos1"] = pData->alarmDatas[i].alarmPos1;
+		alarm["alarmPos2"] = pData->alarmDatas[i].alarmPos2;
+		alarm["alarmValue1"] = pData->alarmDatas[i].alarmValue1;
+		alarm["alarmLevel"] = pData->alarmDatas[i].alarmLevel;
+
+		alarm_list.append(alarm);
+
+	}
+	totalData.insert("alarmDatas", alarm_list);
+
+	//显示用
+	QJsonDocument doc(totalData);
+	QByteArray byteArrayUft8 = doc.toJson();
+
+	boolean isutf8 = IsTextUTF8((char*)byteArrayUft8.data(), byteArrayUft8.length());
+	qDebug() << "vibrateDataToJson end" << isutf8;
+	qDebug() << "JSON存储" ;
+	{
+#if 1
+		bool exist;
+		QString fileName;
+
+		QDir *folder = new QDir;
+		exist = folder->exists("D:/Vabrition/Resources/Json");//查看目录是否存在（例子是保存到桌面）
+
+		if (!exist){//不存在就创建
+			bool ok = folder->mkdir("D:/Vabrition/Resources/Json");
+		}
+		fileName = tr("D:/Vabrition/Resources/Json/%1.txt").arg(pData->record_id);
+
+		QFile f(fileName);
+		if (f.open(QIODevice::ReadWrite | QIODevice::Text)){//chongxin写入 添加结束符\r\n
+			f.write(byteArrayUft8);
+		}
+		f.close();
+#endif
+	}
+
+
+	{
+		NetworkLogic hpptPost = NetworkLogic();
+		hpptPost.postHttps("http://192.168.172.99:8080/collection/checkData/lvwRecord/", byteArrayUft8);
+		//hpptPost.postHttps("https://api.apiopen.top/api/getTime/", byteArrayUft8);
+		//hpptPost.postHttps("https://www.sojson.com/httpRequest/", byteArrayUft8);
+	}
+}
+
+/************************************/
 
 AlgorithmBase::AlgorithmBase(QObject *parent) : QObject(parent)
 {
 	m_pMySqlHelper = ImportDllClass::GetInstance()->m_pMySqlHelper;
+
 }
 
 AlgorithmBase::~AlgorithmBase()
@@ -300,8 +1603,9 @@ void AlgorithmBase::startGrab(QString strTrainRunNumber)
 			{
 				algorithmSendMsg(QStringLiteral("采集连接已断开异常"), 1);
 			}
-			algorithmSendMsg(QStringLiteral("开始数据分析和落盘"), 0);
-			analysisAndSaveData();
+
+			//algorithmSendMsg(QStringLiteral("开始数据分析和落盘"), 0);
+			//analysisAndSaveData();
 		}
 		else
 		{
@@ -311,14 +1615,26 @@ void AlgorithmBase::startGrab(QString strTrainRunNumber)
 
 }
 
-void AlgorithmBase::stopGrab(QString strTrainNumber, QString strLineNumber, QString strControlPort)
+void AlgorithmBase::stopGrab(QString strTrainNumber, QString strLineNumber, QString strControlPort, int flag)
 {
-	m_strTrainNumber = strTrainNumber;
-	m_strLineNumber = strLineNumber;
-	m_strMainControlPort = strControlPort;
 	algorithmSendMsg(QStringLiteral("收到停止采集命令，开始停止采集"), 0);
 	m_bIsGrab = false;
+	switch (flag)
+	{
+	case 0:
+		//********************************//
+		break;
+	case 1:
+		m_strTrainNumber = strTrainNumber;
+		m_strLineNumber = strLineNumber;
+		m_strMainControlPort = strControlPort;
+		QThread::sleep(1);    //暂停1s，停止采集
+		algorithmSendMsg(QStringLiteral("开始数据分析和落盘"), 0);
+		analysisAndSaveData();
+		break;
+	}
 }
+
 
 void AlgorithmBase::closeDevice()
 {
@@ -386,6 +1702,8 @@ void AlgorithmBase::analysisAndSaveData()
 		t1.push_back(allGrabData[i * 16 + 12]); t2.push_back(allGrabData[i * 16 + 13]); t3.push_back(allGrabData[i * 16 + 14]);
 		t4.push_back(allGrabData[i * 16 + 15]);
 	}
+
+	
 
 	//数据存储
 	QString strSavePath = m_strFileSavePathRoot + m_strTrainRunNumber + "\\VAIS\\";
@@ -504,7 +1822,6 @@ void AlgorithmBase::operateData(std::vector<double> &v1, std::vector<double> &v2
 	});
 }
 
-
 void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL, std::vector<std::vector<double>> axleDataL,
 	std::vector<std::vector<double>> electricalDataL, std::vector<std::vector<double>> vibrateDataR,
 	std::vector<std::vector<double>> axleDataR, std::vector<std::vector<double>> electricalDataR)
@@ -532,6 +1849,9 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 	double motortempinc_alarm; int motortempinc_alarm_num = 0;
 	double motortemp_max;
 	double motortempinc_max;
+	std::vector<double> zdzhz_L;
+	std::vector<double> zdzhz_R;
+	double zdzhz_max;
 
 	//20210302 yxw add:查询振动综合值的报警、预警值
 	double zdzhz_warn; int zdzhz_warn_num = 0;
@@ -725,6 +2045,7 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 		for (int i = 0; i < lengthL;i++)
 		{
 			double zdzhzL = vibrateDataL[0][i] * zdzhz_ka + vibrateDataL[1][i] * zdzhz_kb;
+			zdzhz_L.push_back(zdzhzL);
 			if (zdzhzL >= zdzhz_alarm)
 			{
 				zdzhz_alarm_num++;
@@ -741,6 +2062,7 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 		for (int i = 0; i < lengthR; i++)
 		{
 			double zdzhzR = vibrateDataR[0][i] * zdzhz_ka + vibrateDataR[1][i] * zdzhz_kb;
+			zdzhz_R.push_back(zdzhzR);
 			if (zdzhzR >= zdzhz_alarm)
 			{
 				zdzhz_alarm_num++;
@@ -887,6 +2209,9 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 		//电机温升最大值
 		motortempinc_max = (*std::max_element(electricalDataL[2].begin(), electricalDataL[2].end()) > *std::max_element(electricalDataR[2].begin(), electricalDataR[2].end()) ?
 			*std::max_element(electricalDataL[2].begin(), electricalDataL[2].end()) : *std::max_element(electricalDataR[2].begin(), electricalDataR[2].end()));
+		//振动综合值最大值
+		zdzhz_max = (*std::max_element(zdzhz_L.begin(), zdzhz_L.end()) > *std::max_element(zdzhz_R.begin(), zdzhz_R.end()) ?
+			*std::max_element(zdzhz_L.begin(), zdzhz_L.end()) : *std::max_element(zdzhz_R.begin(), zdzhz_R.end()));
 
 		int state = 4;
 		// 20210302 yxw modify:start
@@ -929,7 +2254,7 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 		key.clear(); value.clear();
 		key << "train_onlyid" << "fz_warn" << "fz_alarm" << "jfg_warn" << "jfg_alarm" << "fzyz_warn" <<
 			"fzyz_alarm" << "qd_warn" << "qd_alarm" << "qdyz_warn" << "qdyz_alarm" << "zx_temp" <<
-			"motor_temp" << "zx_tempinc" << "motor_tempinc" << "train_date";
+			"motor_temp" << "zx_tempinc" << "motor_tempinc" <<"train_date";
 		value << m_strOnlyID << QString::number(fz_warn_num) << QString::number(fz_alarm_num) << QString::number(jfg_warn_num) <<
 			QString::number(jfg_alarm_num) << QString::number(fzyz_warn_num) << QString::number(fzyz_alarm_num) << QString::number(qd_warn_num) <<
 			QString::number(qd_alarm_num) << QString::number(qdyz_warn_num) << QString::number(qdyz_alarm_num) <<
@@ -1049,7 +2374,7 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 		//分奇偶车，取奇车
 		key.clear();
 		key << "train_onlyid" << "carriage_num" << "wheel_num" << "jfg_value" << "fz_value" << "fzyz_value" <<
-			"qd_value" << "qdyz_value" << "zx_temp" << "zx_tempinc" << "train_date" <<"hj_temp";
+			"qd_value" << "qdyz_value" << "zx_temp" << "zx_tempinc" << "train_date" << "hj_temp";
 		for (int i = 0; i < 24; i++)
 		{
 			value.clear();
@@ -1073,7 +2398,7 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 					QString::number(vibrateDataL[1][z]) << QString::number(vibrateDataL[2][z]) <<
 					QString::number(vibrateDataL[3][z]) << QString::number(vibrateDataL[4][z]) <<
 					QString::number(axleDataL[0][z]) << QString::number(axleDataL[2][z]) << m_strTrainRunNumber
-					<<QString::number(m_dEnvironmentTemp);
+					<< QString::number(m_dEnvironmentTemp);;
 			}
 			else
 			{
@@ -1089,7 +2414,7 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 					QString::number(vibrateDataR[1][z]) << QString::number(vibrateDataR[2][z]) <<
 					QString::number(vibrateDataR[3][z]) << QString::number(vibrateDataR[4][z]) <<
 					QString::number(axleDataR[0][z]) << QString::number(axleDataR[2][z]) << m_strTrainRunNumber
-					<<QString::number(m_dEnvironmentTemp);
+					<< QString::number(m_dEnvironmentTemp);
 			}
 			bool ret = m_pMySqlHelper->writeSqlData("vt_info", key, value);
 			if (ret)
@@ -1125,7 +2450,7 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 					QString::number(vibrateDataL[1][z]) << QString::number(vibrateDataL[2][z]) <<
 					QString::number(vibrateDataL[3][z]) << QString::number(vibrateDataL[4][z]) <<
 					QString::number(axleDataL[0][z]) << QString::number(axleDataL[2][z]) << m_strTrainRunNumber
-					<<QString::number(m_dEnvironmentTemp);
+					<< QString::number(m_dEnvironmentTemp);
 			}
 			else
 			{
@@ -1141,7 +2466,7 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 					QString::number(vibrateDataR[1][z]) << QString::number(vibrateDataR[2][z]) <<
 					QString::number(vibrateDataR[3][z]) << QString::number(vibrateDataR[4][z]) <<
 					QString::number(axleDataR[0][z]) << QString::number(axleDataR[2][z]) << m_strTrainRunNumber
-					<<QString::number(m_dEnvironmentTemp);
+					<< QString::number(m_dEnvironmentTemp);
 			}
 
 			bool ret = m_pMySqlHelper->writeSqlData("vt_info", key, value);
@@ -1251,6 +2576,7 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 				algorithmSendMsg(QStringLiteral("motor_info数据表，第") + QString::number(i) + QStringLiteral("次写入失败"), 1);
 			}
 		}
+			
 
 		if (m_pMySqlHelper->closeSql())
 		{
@@ -1260,6 +2586,32 @@ void AlgorithmBase::writeDataToSql(std::vector<std::vector<double>> vibrateDataL
 		{
 			emit algorithmSendMsg(QStringLiteral("数据库关闭失败！"), 1);
 		}
+
+		/********************************************/
+		{
+			//-----参数(json中定义)：c++中对应定义变量------
+			//振动综合值：zdzhz_R，zdzhz_L
+			//轴箱温度：axleDataR[0],axleDataL[0] ----0代表均值，1代表峰值，传均值给json
+			//电机温度：electricalDataR[0], electricalDataL[0] ----0代表均值，1代表峰值，传均值给json
+			//环境温度(ambientTemperature)：m_dEnvironmentTemp
+			//速度(speed)：m_dTrainSpeed
+			//检测时间(checkTime)：m_strTrainRunNumber  ----列车过车流水号是以时间命名的，checkTime;需“20201121125815”转换成"2022-05-21 18:35:47"格式
+			//记录号(record_id)：m_strTrainRunNumber  ----列车过车流水号是以时间命名的，record_id:直接使用
+			//主控端：m_strMainControlPort.toInt() ---- 0：偶数端，1：奇数端，该参数不传json，只用于车厢号的处理
+			//车号(groupName)：m_strTrainNumber -----格式如"005006"，传给json的格式为"09005006"
+			//车厢号(carriageNumber)：需根据主控端和车号进行处理，格式"09A005"
+			//线路号：m_strLineNumber
+
+			setAlarmData(motortemp_alarm, motortemp_warn, zdzhz_alarm, zdzhz_warn, zw_alarm, zw_warn);
+
+			struct VIBRATE_DATA data;
+			struct VIBRATE_DATA *pData = &data;
+			setVibData(pData, zdzhz_L, zdzhz_R, axleDataR, axleDataL, electricalDataR, electricalDataL);
+
+			vibrateDataToJson(&data);
+		}
+		/**********************************************/
+		
 	}
 	else
 	{
@@ -1337,6 +2689,7 @@ void AlgorithmBase::simulateTrigger(QString strTrainNumber)
 		|| !g1.size() || !g2.size() || !g3.size() || !g4.size() || !t1.size() || !t2.size() || !t3.size() || !t4.size())
 	{
 		algorithmSendMsg(QStringLiteral("存在数据为空，请检查数据源"), 1);
+		m_Semaphore.release(16);
 		return;
 	}
 	m_Semaphore.release(16);

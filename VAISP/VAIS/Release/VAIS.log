@@ -1,0 +1,21 @@
+﻿  QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly.
+  Moc'ing vais_main_form.h...
+  Moc'ing password_form.h...
+  Moc'ing tray_menu.h...
+  Moc'ing simulate_trigger_ui.h...
+  Rcc'ing imageResource.qrc...
+  moc_password_form.cpp
+  moc_simulate_trigger_ui.cpp
+  moc_tray_menu.cpp
+  moc_vais_main_form.cpp
+  import_dll_class.cpp
+f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\vais\..\DealAlgorithm\algorithm_base.h(14): fatal error C1083: 无法打开包括文件: “curl/curl.h”: No such file or directory (GeneratedFiles\moc_vais_main_form.cpp)
+  main.cpp
+f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\deallogic\..\DealAlgorithm\algorithm_base.h(14): fatal error C1083: 无法打开包括文件: “curl/curl.h”: No such file or directory (import_dll_class.cpp)
+  password_form.cpp
+  simulate_trigger_ui.cpp
+  tray_menu.cpp
+  vais_main_form.cpp
+f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\vais\..\DealAlgorithm\algorithm_base.h(14): fatal error C1083: 无法打开包括文件: “curl/curl.h”: No such file or directory (main.cpp)
+f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\deallogic\..\DealAlgorithm\algorithm_base.h(14): fatal error C1083: 无法打开包括文件: “curl/curl.h”: No such file or directory (simulate_trigger_ui.cpp)
+f:\software\acquition-software\vibration\飞鹅岭\vibration\vaisp\vais\..\DealAlgorithm\algorithm_base.h(14): fatal error C1083: 无法打开包括文件: “curl/curl.h”: No such file or directory (vais_main_form.cpp)

@@ -49,12 +49,21 @@
     <ClCompile Include="GeneratedFiles\moc_algorithm_base.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\moc_network_logic.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="network_logic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="algorithm_base.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="algorithm_operate_thread.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="network_logic.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

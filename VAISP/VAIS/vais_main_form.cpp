@@ -7,12 +7,13 @@
 
 #include <QVBoxLayout>
 #include <QGridLayout>
-
+//#include "curl/curl.h"
 
 #pragma comment(lib, "version.lib")
 
 VAISMainForm::VAISMainForm(QWidget *parent) : QWidget(parent)
 {
+
 	__setupUI();
 	__initialTableViewVibrate();
 	__initialTableViewAxle();
@@ -21,11 +22,12 @@ VAISMainForm::VAISMainForm(QWidget *parent) : QWidget(parent)
 
 	__initialLogicAndDevice();
 	__connectFuntion();
-
+//	curl_global_init(CURL_GLOBAL_ALL);
 }
 
 VAISMainForm::~VAISMainForm()
 {
+//	curl_global_cleanup();
 }
 
 void VAISMainForm::__setupUI()

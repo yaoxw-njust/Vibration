@@ -11,6 +11,61 @@
 #include <QSemaphore>
 #include <vector>
 #include <QVector>
+//#include "curl/curl.h"
+
+#include <string>
+using namespace std;
+struct CHECKDATA_VIBRATE{
+	QString img;
+	int state;
+	int axisArount;
+	QString checkItemCode;
+	double value;
+	QString checkItemName;
+};
+
+struct WHEELSET{
+	int pos;
+	int checkDataNum;
+	struct CHECKDATA_VIBRATE checkData[5];
+};
+struct CARRIAGE{
+	QString carriageNumber;
+	int carriagePos;
+	int wheelSetCount;
+	struct WHEELSET wheelSet[4];
+};
+struct ALARM_DATAS{
+	QString groupName;
+	QString alarmTime;
+	int carriagePos;
+	QString carriageNumber;
+	int modelId;
+	QString modelCode;
+	int checkItemId;
+	QString checkItemCode;
+	int alarmPos1;
+	int alarmPos2;
+	//int alarmPos3;
+	double alarmValue1;
+	//float alarmValue2;
+	int alarmLevel;
+};
+
+struct VIBRATE_DATA{
+	QString record_id;
+	QString groupName;
+	QString  checkTime;
+	int passDw;
+	int checkDir;
+	QString  jcpCode;
+	double speed;
+	double ambientTemperature;
+	int   carriageNum;
+	struct CARRIAGE  carriages[6];
+	int alarmNum;
+	vector<struct ALARM_DATAS>  alarmDatas;
+};
 
 class DEALALGORITHM_EXPORT AlgorithmBase : public QObject
 {
@@ -24,7 +79,8 @@ public:
 	virtual void openDevice();
 	virtual void startGrab(QString strTrainRunNumber="20201121125815");
 	virtual void stopGrab(QString strTrainNumber = "099100", QString strLineNumber = "09", 
-		QString strControlPort = "0");
+		QString strControlPort = "0", int flag=0);
+
 	virtual void closeDevice();
 	virtual void simulateTrigger(QString strTrainNumber);
 
@@ -38,12 +94,16 @@ private:
 		std::vector<double> &v5, std::vector<double> &v6, std::vector<double> &v7, std::vector<double> &v8,
 		std::vector<double> &g1, std::vector<double> &g2, std::vector<double> &g3, std::vector<double> &g4,
 		std::vector<double> &t1, std::vector<double> &t2, std::vector<double> &t3, std::vector<double> &t4);
-	void readDataFromTxt(QString strPath, std::vector<double> &vec1);
+	void readDataFromTxt(QString strPath,std::vector<double> &vec1);
 	void writeDataToSql(std::vector<std::vector<double>> vibrateDataL, std::vector<std::vector<double>> axleDataL,
 		std::vector<std::vector<double>> electricalDataL, std::vector<std::vector<double>> vibrateDataR,
 		std::vector<std::vector<double>> axleDataR, std::vector<std::vector<double>> electricalDataR);
-
-
+	void vibrateDataToJson(struct VIBRATE_DATA *pData);
+	void setAlarmData(float motortemp_alarm, float motortemp_warn, float zdzhz_alarm,
+		float zdzhz_warn, float zw_alarm, float zw_warn);
+	void setVibData(struct VIBRATE_DATA *pData, vector<double> zdzhz_L, vector<double> zdzhz_R,
+		vector<vector<double>> axleDataR, vector<vector<double>> axleDataL,
+		vector<vector<double>> electricalDataR, vector<vector<double>> electricalDataL);
 	//private slots:
 	//void getAndSendResultData(int directionFlag);
 
@@ -126,12 +186,11 @@ private:
 	std::vector<double> g1, g2, g3, g4;
 	std::vector<double> t1, t2, t3, t4;
 
-	QString m_strTrainRunNumber = "20201121125815";
+	QString m_strTrainRunNumber = "20210809125815";
 	QString m_strTrainNumber = "099100";
 	QString m_strLineNumber = "09";
 	QString m_strMainControlPort = "0";
 	QString m_strStation = QStringLiteral("∑…∂Ï¡Î");
-
 
 public:
 	std::vector<std::vector<double>> vibrationDataRight;

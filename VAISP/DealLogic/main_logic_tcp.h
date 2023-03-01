@@ -22,7 +22,7 @@ public:
 
 private:
 	void runStartGrabData(QString strTrainRunNumber);
-	void runStopGrabData(QString strTrainNumber, QString strLineNumber, QString strControlPort);
+	void runStopGrabData(QString strTrainNumber, QString strLineNumber, QString strControlPort, int flag);
 
 
 	private slots:

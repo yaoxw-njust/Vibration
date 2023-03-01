@@ -8,7 +8,6 @@
 #include <QThread>
 #include <QtConcurrent\QtConcurrent>
 
-
 MainLogicTcp::MainLogicTcp(QObject *parent): QObject(parent)
 {
 	m_pAlgorithmBase = ImportDllClass::GetInstance()->m_pAlgorithmBase;
@@ -97,7 +96,15 @@ void MainLogicTcp::mainLogicRun(QByteArray bytes)
 			emit mainLogicSendMsg(QStringLiteral("收到离车信号，流水号：") + strDataList[1] + QStringLiteral("，线号：")
 				+ strDataList[2] + QStringLiteral("，车号：") + strDataList[3] + QStringLiteral("，主控端：") + 
 				strDataList[4] + QStringLiteral("，所有设备停止采集"), 0);
-			runStopGrabData(strDataList[3], strDataList[2], strDataList[4]);
+			if (0 == strDataList[3].toInt())
+			{
+				runStopGrabData(strDataList[3], strDataList[2], strDataList[4], 0);
+			}
+			else
+			{
+				runStopGrabData(strDataList[3], strDataList[2], strDataList[4], 1);
+			}
+			
 			break;
 		case 2:
 			//其他信息
@@ -111,10 +118,19 @@ void MainLogicTcp::runStartGrabData(QString strTrainRunNumber)
 	m_pAlgorithmBase->startGrab(strTrainRunNumber);
 }
 
-void MainLogicTcp::runStopGrabData(QString strTrainNumber, QString strLineNumber, QString strControlPort)
+void MainLogicTcp::runStopGrabData(QString strTrainNumber, QString strLineNumber, QString strControlPort, int flag)
 {
-	m_pAlgorithmBase->stopGrab(strTrainNumber, strLineNumber, strControlPort);
+	switch (flag)
+	{
+	case 0:
+		m_pAlgorithmBase->stopGrab(strTrainNumber, strLineNumber, strControlPort, 0);
+		break;
+	case 1:
+		m_pAlgorithmBase->stopGrab(strTrainNumber, strLineNumber, strControlPort, 1);
+		break;
+	}	
 }
+
 
 void MainLogicTcp::simulateTrigger(QString strTrainNumber)
 {
