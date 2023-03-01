@@ -10,6 +10,8 @@
 #include <winnt.rh>
 #include <winbase.h>
 
+
+
 #pragma comment(lib, "ws2_32.lib") 	
 
 AlgorithmBase::AlgorithmBase(QObject *parent) : QObject(parent)
@@ -199,73 +201,91 @@ void AlgorithmBase::openDevice()
 
 void AlgorithmBase::startGrab(QString strTrainRunNumber)
 {
-	initialData();
-	m_strTrainRunNumber = strTrainRunNumber;
+	if (m_bIsCompleteAnalysis)
+	{
+		initialData();
+		m_strTrainRunNumber = strTrainRunNumber;
 
-	QtConcurrent::run([=](){
-		short* arrayData = NULL;
-		m_bIsOpen = true;
+		QtConcurrent::run([=](){
+			short* arrayData = NULL;
+			m_bIsOpen = true;
 
-		QByteArray byte_ip = m_strConnectIP.toLatin1();
-		int_ip = IP_StrToInt(byte_ip.data());
-		int ret = SysInit(&int_ip, 1);
-		if (-1 == ret)
-		{
-			m_bIsOpen = false;
-			algorithmSendMsg(QStringLiteral("连接初始化异常"), 1);
-		}
-
-		socket_index = ConnectCreate(int_ip, 1600, 0, 1, 500, 3);
-		if (socket_index < 0)
-		{
-			m_bIsOpen = false;
-			algorithmSendMsg(QStringLiteral("创建连接出现异常，错误代码为：") + QString::number(socket_index), 1);
-		}
-
-		ret = ADSyncParaWrite(10000, 1, 0, 0xFFFF, 0, socket_index);
-		if (-1 == ret)
-		{
-			m_bIsOpen = false;
-			algorithmSendMsg(QStringLiteral("同步采集仪设置异常"), 1);
-		}
-
-		ret = ADGainWrite(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, socket_index);
-		if (-1 == ret)
-		{
-			m_bIsOpen = false;
-			algorithmSendMsg(QStringLiteral("采集仪增益设置异常"), 1);
-		}
-
-		if (m_bIsOpen)
-		{
-			try
+			QByteArray byte_ip = m_strConnectIP.toLatin1();
+			int_ip = IP_StrToInt(byte_ip.data());
+			int ret = SysInit(&int_ip, 1);
+			if (-1 == ret)
 			{
-				int ret = ADStart(socket_index);
-				if (-1 == ret)
+				m_bIsOpen = false;
+				algorithmSendMsg(QStringLiteral("连接初始化异常"), 1);
+			}
+
+			socket_index = ConnectCreate(int_ip, 1600, 0, 1, 500, 3);
+			if (socket_index < 0)
+			{
+				m_bIsOpen = false;
+				algorithmSendMsg(QStringLiteral("创建连接出现异常，错误代码为：") + QString::number(socket_index), 1);
+			}
+
+			ret = ADSyncParaWrite(10000, 1, 0, 0xFFFF, 0, socket_index);
+			if (-1 == ret)
+			{
+				m_bIsOpen = false;
+				algorithmSendMsg(QStringLiteral("同步采集仪设置异常"), 1);
+			}
+
+			ret = ADGainWrite(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, socket_index);
+			if (-1 == ret)
+			{
+				m_bIsOpen = false;
+				algorithmSendMsg(QStringLiteral("采集仪增益设置异常"), 1);
+			}
+
+			if (m_bIsOpen)
+			{
+				try
 				{
-					algorithmSendMsg(QStringLiteral("开启A/D采集失败"), 1);
-					m_bIsGrab = false;
+					int ret = ADStart(socket_index);
+					if (-1 == ret)
+					{
+						algorithmSendMsg(QStringLiteral("开启A/D采集失败"), 1);
+						m_bIsGrab = false;
+						return;
+					}
+					m_bIsGrab = true;
+					algorithmSendMsg(QStringLiteral("开启A/D采集"), 0);
+					QThread::msleep(100);  //防止读取数据时卡死
+
+					while (m_bIsGrab)
+					{
+						arrayData = new short[720];
+						int ret = ADDataRead(arrayData, 720, socket_index);
+						for (int i = 0; i < 720; i++)
+						{
+							allGrabData.push_back((*(arrayData + i))*10.0 / 0x7fff);
+						}
+						delete[] arrayData;
+						arrayData = NULL;
+					}
+				}
+				catch (...)
+				{
+					algorithmSendMsg(QStringLiteral("数据采集中出现错误"), 1);
+					int ret = ADStop(socket_index);
+					if (ret > 0)
+					{
+						algorithmSendMsg(QStringLiteral("停止采集数据"), 0);
+					}
+					else
+					{
+						algorithmSendMsg(QStringLiteral("停止采集数据异常"), 1);
+					}
 					return;
 				}
-				m_bIsGrab = true;
-				algorithmSendMsg(QStringLiteral("开启A/D采集"), 0);
-				QThread::msleep(100);  //防止读取数据时卡死
-
-				while (m_bIsGrab)
+				if (NULL != arrayData)
 				{
-					arrayData = new short[720];
-					int ret = ADDataRead(arrayData, 720, socket_index);
-					for (int i = 0; i < 720; i++)
-					{
-						allGrabData.push_back((*(arrayData + i))*10.0 / 0x7fff);
-					}
 					delete[] arrayData;
-					arrayData = NULL;
 				}
-			}
-			catch (...)
-			{
-				algorithmSendMsg(QStringLiteral("数据采集中出现错误"), 1);
+				arrayData = NULL;
 				int ret = ADStop(socket_index);
 				if (ret > 0)
 				{
@@ -275,39 +295,30 @@ void AlgorithmBase::startGrab(QString strTrainRunNumber)
 				{
 					algorithmSendMsg(QStringLiteral("停止采集数据异常"), 1);
 				}
-				return;
-			}
-			if (NULL != arrayData)
-			{
-				delete[] arrayData;
-			}
-			arrayData = NULL;
-			int ret = ADStop(socket_index);
-			if (ret > 0)
-			{
-				algorithmSendMsg(QStringLiteral("停止采集数据"), 0);
-			}
-			else
-			{
-				algorithmSendMsg(QStringLiteral("停止采集数据异常"), 1);
-			}
-			ret = ConnectDel(socket_index);
-			if (ret > 0)
-			{
-				algorithmSendMsg(QStringLiteral("采集连接已断开"), 0);
+				ret = ConnectDel(socket_index);
+				if (ret > 0)
+				{
+					algorithmSendMsg(QStringLiteral("采集连接已断开"), 0);
+				}
+				else
+				{
+					algorithmSendMsg(QStringLiteral("采集连接已断开异常"), 1);
+				}
+				algorithmSendMsg(QStringLiteral("开始数据分析和落盘"), 0);
+				m_bIsCompleteAnalysis = false;
+				analysisAndSaveData();
 			}
 			else
 			{
-				algorithmSendMsg(QStringLiteral("采集连接已断开异常"), 1);
+				algorithmSendMsg(QStringLiteral("设备未打开，无法开启采集"), 1);
 			}
-			algorithmSendMsg(QStringLiteral("开始数据分析和落盘"), 0);
-			analysisAndSaveData();
-		}
-		else
-		{
-			algorithmSendMsg(QStringLiteral("设备未打开，无法开启采集"), 1);
-		}
-	});
+		});
+
+	}
+	else
+	{
+		algorithmSendMsg(QStringLiteral("上次数据分析未完成，本次不做实际数据采集！"), 1);
+	}
 
 }
 
@@ -387,6 +398,9 @@ void AlgorithmBase::analysisAndSaveData()
 		t4.push_back(allGrabData[i * 16 + 15]);
 	}
 
+	//处理数据
+	operateData(v1, v2, v3, v4, v5, v6, v7, v8, g1, g2, g3, g4, t1, t2, t3, t4);
+
 	//数据存储
 	QString strSavePath = m_strFileSavePathRoot + m_strTrainRunNumber + "\\VAIS\\";
 	strSavePath.replace("/", "\\");
@@ -430,8 +444,8 @@ void AlgorithmBase::analysisAndSaveData()
 	saveDataToTxt(t4, "temperate4", strSavePath);   //储存温度4的数据
 	algorithmSendMsg(QStringLiteral("temperate4完成落盘"), 0);
 
-	//处理数据
-	operateData(v1, v2, v3, v4, v5, v6, v7, v8, g1, g2, g3, g4, t1, t2, t3, t4);
+	m_bIsCompleteAnalysis = true;
+
 }
 
 void AlgorithmBase::saveDataToTxt(std::vector<double> data, QString dataName, QString fileRootPath)
@@ -471,12 +485,12 @@ void AlgorithmBase::operateData(std::vector<double> &v1, std::vector<double> &v2
 	//处理数据
 	std::vector<double> sensitivity1 = { 0.0099, 0.0099, 0.010, 0.0101 };    //振动传感器灵敏度
 	std::vector<double> sensitivity2 = { 0.0098, 0.010, 0.0097, 0.0098 };
-
+	m_bIsRunAlg = false;
 	QtConcurrent::run([=](){
 		if (!m_bIsRunAlg)
-		{
+		{	
 			m_bIsRunAlg = true;
-			algotrithOperateRight->initialData(v1, v2, v3, v4, g2, g3, g4, t2, t3, sensitivity1, 1);
+			algotrithOperateRight->initialData(v1, v2, v3, v4, g2, g3, g4, t2, t3, sensitivity1, 0);
 			algotrithOperateRight->runSingle();
 
 			vibrationDataRight = algotrithOperateRight->vibrationEigenValue;
@@ -486,7 +500,7 @@ void AlgorithmBase::operateData(std::vector<double> &v1, std::vector<double> &v2
 			m_dEnvironmentTemp = algotrithOperateRight->m_dEnvironmentTemp;
 			algorithmSendMsg(QStringLiteral("右侧计算完成"), 0);
 
-			algotrithOperateLeft->initialData(v5, v6, v7, v8, g2, g3, g4, t1, t4, sensitivity2, 0);
+			algotrithOperateLeft->initialData(v5, v6, v7, v8, g2, g3, g4, t1, t4, sensitivity2, 1);
 			algotrithOperateLeft->runSingle();
 			vibrationDataLeft = algotrithOperateLeft->vibrationEigenValue;
 			axleDataLeft = algotrithOperateLeft->bearPalteTemperatureDivided;

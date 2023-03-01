@@ -1,0 +1,10 @@
+﻿  QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly.
+  Moc'ing algorithm_base.h...
+  Moc'ing algorithm_operate_thread.h...
+  algorithm_operate_thread.cpp
+  algorithm_base.cpp
+  moc_algorithm_base.cpp
+  moc_algorithm_operate_thread.cpp
+  import_dll_class.cpp
+     正在创建库 ..\Release\DealAlgorithm.lib 和对象 ..\Release\DealAlgorithm.exp
+  DealAlgorithm.vcxproj -> F:\software\acquition-software\Vibration\广州南站\Vibration\VAISP\DealAlgorithm\..\Release\DealAlgorithm.dll

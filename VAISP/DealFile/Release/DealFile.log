@@ -1,0 +1,8 @@
+﻿  QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly.
+  Moc'ing mysql_helper.h...
+  moc_mysql_helper.cpp
+  ini_helper.cpp
+  log_helper.cpp
+  mysql_helper.cpp
+     正在创建库 ..\Release\DealFile.lib 和对象 ..\Release\DealFile.exp
+  DealFile.vcxproj -> F:\software\acquition-software\Vibration\广州南站\Vibration\VAISP\DealFile\..\Release\DealFile.dll

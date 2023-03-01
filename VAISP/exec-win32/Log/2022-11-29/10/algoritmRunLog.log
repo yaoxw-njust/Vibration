@@ -1,0 +1,34 @@
+2022-11-29 10:04:19:902  preprocess:磁钢信号预处理完成，位置标记：1
+2022-11-29 10:04:19:932  temperatureCalculate：G2分轮完成，分轮数尺度为：48
+2022-11-29 10:04:19:949  temperatureCalculate：轴承端盖温度特征值计算完成, 位置标记：1
+2022-11-29 10:04:19:974  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2022-11-29 10:04:19:976  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2022-11-29 10:04:19:978  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2022-11-29 10:04:19:980  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2022-11-29 10:04:19:982  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2022-11-29 10:04:19:983  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2022-11-29 10:04:20:004  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2022-11-29 10:04:20:007  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2022-11-29 10:04:20:008  车速为：51.0166位置标记为：1
+2022-11-29 10:04:20:013  vibrationCalculate:计算完成, 位置标记：1
+2022-11-29 10:04:20:160  vibrationCalculate:振动特征值计算完成, 位置标记：1
+2022-11-29 10:04:41:500  preprocess:磁钢信号预处理完成，位置标记：0
+2022-11-29 10:04:41:508  temperatureCalculate：G2分轮完成，分轮数尺度为：48
+2022-11-29 10:04:41:533  temperatureCalculate：轴承端盖温度特征值计算完成, 位置标记：0
+2022-11-29 10:05:10:231  preprocess:磁钢信号预处理完成，位置标记：1
+2022-11-29 10:05:10:234  temperatureCalculate：G2分轮完成，分轮数尺度为：48
+2022-11-29 10:05:10:249  temperatureCalculate：轴承端盖温度特征值计算完成, 位置标记：1
+2022-11-29 10:05:10:265  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2022-11-29 10:05:10:268  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2022-11-29 10:05:10:271  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2022-11-29 10:05:10:275  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2022-11-29 10:05:10:276  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2022-11-29 10:05:10:278  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2022-11-29 10:05:10:280  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2022-11-29 10:05:10:282  electricalTemperatureCalculate:电机温度计算完成, 位置标记：1
+2022-11-29 10:05:10:283  车速为：51.0166位置标记为：1
+2022-11-29 10:05:10:288  vibrationCalculate:计算完成, 位置标记：1
+2022-11-29 10:05:10:434  vibrationCalculate:振动特征值计算完成, 位置标记：1
+2022-11-29 10:05:37:488  preprocess:磁钢信号预处理完成，位置标记：0
+2022-11-29 10:05:37:495  temperatureCalculate：G2分轮完成，分轮数尺度为：48
+2022-11-29 10:05:37:513  temperatureCalculate：轴承端盖温度特征值计算完成, 位置标记：0

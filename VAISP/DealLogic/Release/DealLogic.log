@@ -1,0 +1,10 @@
+﻿  QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly.
+  Moc'ing tcp_logic.h...
+  Moc'ing main_logic_tcp.h...
+  moc_main_logic_tcp.cpp
+  moc_tcp_logic.cpp
+  import_dll_class.cpp
+  main_logic_tcp.cpp
+  tcp_logic.cpp
+     正在创建库 ..\Release\DealLogic.lib 和对象 ..\Release\DealLogic.exp
+  DealLogic.vcxproj -> F:\software\acquition-software\Vibration\广州南站\Vibration\VAISP\DealLogic\..\Release\DealLogic.dll

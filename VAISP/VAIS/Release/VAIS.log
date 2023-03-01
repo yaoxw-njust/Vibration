@@ -1,0 +1,18 @@
+﻿  QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly.
+  Moc'ing vais_main_form.h...
+  Moc'ing password_form.h...
+  Moc'ing tray_menu.h...
+  Moc'ing simulate_trigger_ui.h...
+  Rcc'ing imageResource.qrc...
+  qrc_imageResource.cpp
+  moc_password_form.cpp
+  moc_simulate_trigger_ui.cpp
+  moc_tray_menu.cpp
+  moc_vais_main_form.cpp
+  import_dll_class.cpp
+  main.cpp
+  password_form.cpp
+  simulate_trigger_ui.cpp
+  tray_menu.cpp
+  vais_main_form.cpp
+  VAIS.vcxproj -> F:\software\acquition-software\Vibration\广州南站\Vibration\VAISP\VAIS\..\Release\VAIS.exe

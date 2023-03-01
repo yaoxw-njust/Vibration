@@ -108,6 +108,7 @@ public:
 	bool m_bIsGrab = false;              //是否允许开启采集
 
 	bool m_bIsRunAlg = false;
+	bool m_bIsCompleteAnalysis = true;
 
 	std::vector<double> allGrabData;
 
