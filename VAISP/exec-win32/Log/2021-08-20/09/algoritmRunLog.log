@@ -1,0 +1,12 @@
+2021-08-20 09:56:39:231  preprocess:磁钢信号预处理完成，位置标记：1
+2021-08-20 09:56:39:233  temperatureCalculate：G2分轮完成，分轮数尺度为：12
+2021-08-20 09:56:39:233  temperatureCalculate：m_nAxleMarkG2数据异常，位置标记：1
+2021-08-20 09:56:39:234  electricalTemperatureCalculate:m_nAxleMarkG2数据不是48个，数据异常，位置标记：1
+2021-08-20 09:56:39:235  车速为：37.1968位置标记为：1
+2021-08-20 09:56:39:236  vibrationCalculate:G3分轮异常，位置标记为：1
+2021-08-20 09:56:39:257  preprocess:磁钢信号预处理完成，位置标记：0
+2021-08-20 09:56:39:258  temperatureCalculate：G2分轮完成，分轮数尺度为：12
+2021-08-20 09:56:39:259  temperatureCalculate：m_nAxleMarkG2数据异常，位置标记：0
+2021-08-20 09:56:39:260  electricalTemperatureCalculate:m_nAxleMarkG2数据不是48个，数据异常，位置标记：0
+2021-08-20 09:56:39:261  车速为：37.1968位置标记为：0
+2021-08-20 09:56:39:262  vibrationCalculate:G3分轮异常，位置标记为：0

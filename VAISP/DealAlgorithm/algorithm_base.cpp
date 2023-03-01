@@ -387,6 +387,17 @@ void AlgorithmBase::analysisAndSaveData()
 		t4.push_back(allGrabData[i * 16 + 15]);
 	}
 
+	//yxw add start:保证上次的计算结果不影响下一列车的计算
+	if (m_bIsRunAlg)
+	{
+		algorithmSendMsg(QStringLiteral("前一次计算还未结束，请排查！"), 1);
+		m_bIsRunAlg == false;
+	}
+	//yxw add end
+
+	//处理数据
+	operateData(v1, v2, v3, v4, v5, v6, v7, v8, g1, g2, g3, g4, t1, t2, t3, t4);
+
 	//数据存储
 	QString strSavePath = m_strFileSavePathRoot + m_strTrainRunNumber + "\\VAIS\\";
 	strSavePath.replace("/", "\\");
@@ -430,8 +441,7 @@ void AlgorithmBase::analysisAndSaveData()
 	saveDataToTxt(t4, "temperate4", strSavePath);   //储存温度4的数据
 	algorithmSendMsg(QStringLiteral("temperate4完成落盘"), 0);
 
-	//处理数据
-	operateData(v1, v2, v3, v4, v5, v6, v7, v8, g1, g2, g3, g4, t1, t2, t3, t4);
+
 }
 
 void AlgorithmBase::saveDataToTxt(std::vector<double> data, QString dataName, QString fileRootPath)
@@ -498,7 +508,7 @@ void AlgorithmBase::operateData(std::vector<double> &v1, std::vector<double> &v2
 		}
 		else
 		{
-			algorithmSendMsg(QStringLiteral("右侧前一次计算还未结束，请勿重复计算"), 1);
+			algorithmSendMsg(QStringLiteral("前一次计算还未结束，请勿重复计算"), 1);
 		}
 
 	});

@@ -81,11 +81,11 @@ void AlgorithmOperate::preprocess()
 	}
 	else
 	{
-		std::replace_if(G2.begin(), G2.end(), std::bind2nd(std::greater<double>(), 5), 1);
+		std::replace_if(G2.begin(), G2.end(), std::bind2nd(std::greater<double>(), 1), 1);
 		std::replace_if(G2.begin(), G2.end(), std::bind2nd(std::less<double>(), 1), 0);
-		std::replace_if(G3.begin(), G3.end(), std::bind2nd(std::greater<double>(), 5), 1);
+		std::replace_if(G3.begin(), G3.end(), std::bind2nd(std::greater<double>(), 1), 1);
 		std::replace_if(G3.begin(), G3.end(), std::bind2nd(std::less<double>(), 1), 0);
-		std::replace_if(G4.begin(), G4.end(), std::bind2nd(std::greater<double>(), 5), 1);
+		std::replace_if(G4.begin(), G4.end(), std::bind2nd(std::greater<double>(), 1), 1);
 		std::replace_if(G4.begin(), G4.end(), std::bind2nd(std::less<double>(), 1), 0);
 
 		logHelper->writeError("algoritmRunLog", QStringLiteral("preprocess:磁钢信号预处理完成，位置标记：") + QString::number(m_nFlag));
@@ -401,7 +401,7 @@ void AlgorithmOperate::vibrationCalculate()
 
 	for (size_t i = 1; i < firstIndexTmp.size(); i = i + 2)
 	{
-		if ((firstIndexTmp[i] - firstIndexTmp[i - 1]) > 10)
+		if ((firstIndexTmp[i] - firstIndexTmp[i - 1]) > 50)
 		{
 			firstIndex.push_back(firstIndexTmp[i - 1]);
 			firstIndex.push_back(firstIndexTmp[i]);
@@ -434,7 +434,7 @@ void AlgorithmOperate::vibrationCalculate()
 
 	for (size_t i = 1; i < secondIndexTmp.size(); i = i + 2)
 	{
-		if ((secondIndexTmp[i] - secondIndexTmp[i - 1]) > 10)
+		if ((secondIndexTmp[i] - secondIndexTmp[i - 1]) > 50)
 		{
 			secondIndex.push_back(secondIndexTmp[i - 1]);
 			secondIndex.push_back(secondIndexTmp[i]);
